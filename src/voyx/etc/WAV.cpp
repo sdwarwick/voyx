@@ -111,7 +111,7 @@ void WAV::write(const std::string& path, const std::vector<float>& data, const v
       $("Unable to create \"{0}\"!", path));
   }
 
-  if (drwav_write_pcm_frames(&wav, data.size(), data.data()) != data.size())
+  if (drwav_write_pcm_frames(&wav, samples, data.data()) != samples)
   {
     throw std::runtime_error(
       $("Unable to write \"{0}\"!", path));
