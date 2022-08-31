@@ -56,27 +56,24 @@ public:
   {
     voyxassert(dft.size() == dftsize);
 
+    // NOTE 1/3
     // actually the weight denominator needs to be dftsize*2 to get proper magnitude scaling,
-    // but then requires a correction by factor 2 in synthesis and is therefore omitted
+    // but then requires a multiplication by factor 2 in synthesis and is therefore omitted
 
-    const F weight = F(0.25) / dftsize; // incl. factor 1/4 for windowing
+    const F weight = F(1) / dftsize;
 
     const F delta = sample - std::exchange(analysis.input[analysis.cursor], sample);
 
     for (size_t i = analysis.roi.first, j = i + 1; i < analysis.roi.second; ++i, ++j)
     {
-      const std::complex<F> oldfiddle = analysis.fiddles[i];
-      const std::complex<F> newfiddle = oldfiddle * analysis.twiddles[i];
-
-      analysis.fiddles[i] = newfiddle;
-
-      analysis.accoutput[i] += delta * oldfiddle;
-      analysis.auxoutput[j] = analysis.accoutput[i] * std::conj(newfiddle);
+      analysis.accoutput[i] += delta * analysis.fiddles[i];
+      analysis.fiddles[i] *= analysis.twiddles[i];
+      analysis.auxoutput[j] = analysis.accoutput[i] * std::conj(analysis.fiddles[i]);
     }
 
+    // NOTE 2/3
     // theoretically the DFT periodicity needs to be preserved for proper windowing,
-    // but the both outer bins seem to be noisy for an unclear reason
-    // and will be suppressed anyway after windowing
+    // however both outer bins seem to be noisy and will be suppressed anyway after windowing
 
     // analysis.auxoutput[0] = analysis.auxoutput[dftsize];
     // analysis.auxoutput[dftsize + 1] = analysis.auxoutput[1];
@@ -89,6 +86,7 @@ public:
                       weight);
     }
 
+    // NOTE 3/3
     // finally suppress outer DFT bins as announced in the comment above
 
     dft[0] = dft[dftsize - 1] = 0;
@@ -175,9 +173,7 @@ private:
                                        const std::complex<F>& right,
                                        const F weight)
   {
-    // the factor 1/4 is already included in the weight
-
-    return /* F(0.25) */ ((middle + middle) - (left + right)) * weight;
+    return F(0.25) * ((middle + middle) - (left + right)) * weight;
   }
 
 };
