@@ -21,7 +21,7 @@ class SDFT
 
 public:
 
-  SDFT(const size_t dftsize, const T latency = 1) :
+  SDFT(const size_t dftsize, const double latency = 1) :
     dftsize(dftsize),
     latency(latency)
   {
@@ -32,18 +32,20 @@ public:
     synthesis.twiddles.resize(dftsize);
 
     analysis.cursor = 0;
+    analysis.maxcursor = dftsize * 2 - 1;
     analysis.input.resize(dftsize * 2);
+
     analysis.accoutput.resize(dftsize);
     analysis.auxoutput.resize(dftsize + 2);
     analysis.fiddles.resize(dftsize, 1);
 
     const F pi = F(-2) * std::acos(F(-1)) / (dftsize * 2);
-    const F weight = F(2) / (F(1) - std::cos(pi * dftsize * latency));
+    const F weight = F(2) / (F(1) - std::cos(pi * dftsize * F(latency)));
 
     for (size_t i = 0; i < dftsize; ++i)
     {
       analysis.twiddles[i] = std::polar(F(1), pi * i);
-      synthesis.twiddles[i] = std::polar(weight, pi * i * dftsize * latency);
+      synthesis.twiddles[i] = std::polar(weight, pi * i * dftsize * F(latency));
     }
   }
 
@@ -56,7 +58,7 @@ public:
   {
     voyxassert(dft.size() == dftsize);
 
-    // NOTE 1/3
+    // NOTE
     // actually the weight denominator needs to be dftsize*2 to get proper magnitude scaling,
     // but then requires a multiplication by factor 2 in synthesis and is therefore omitted
 
@@ -71,12 +73,8 @@ public:
       analysis.auxoutput[j] = analysis.accoutput[i] * std::conj(analysis.fiddles[i]);
     }
 
-    // NOTE 2/3
-    // theoretically the DFT periodicity needs to be preserved for proper windowing,
-    // however both outer bins seem to be noisy and will be suppressed anyway after windowing
-
-    // analysis.auxoutput[0] = analysis.auxoutput[dftsize];
-    // analysis.auxoutput[dftsize + 1] = analysis.auxoutput[1];
+    analysis.auxoutput[0] = std::conj(analysis.auxoutput[2]);
+    analysis.auxoutput[dftsize + 1] = std::conj(analysis.auxoutput[dftsize - 1]);
 
     for (size_t i = analysis.roi.first, j = i + 1; i < analysis.roi.second; ++i, ++j)
     {
@@ -86,16 +84,12 @@ public:
                       weight);
     }
 
-    // NOTE 3/3
-    // finally suppress outer DFT bins as announced in the comment above
-
-    dft[0] = dft[dftsize - 1] = 0;
-
-    if (++analysis.cursor >= analysis.input.size())
+    if (++analysis.cursor > analysis.maxcursor)
     {
       analysis.cursor = 0;
 
-      // TODO std::fill(analysis.fiddles.begin(), analysis.fiddles.end(), 1);
+      // TODO reset fiddles?
+      // std::fill(analysis.fiddles.begin(), analysis.fiddles.end(), 1);
     }
   }
 
@@ -146,7 +140,7 @@ public:
 private:
 
   const size_t dftsize;
-  const T latency;
+  const double latency;
 
   struct
   {
@@ -154,6 +148,7 @@ private:
     std::vector<std::complex<F>> twiddles;
 
     size_t cursor;
+    size_t maxcursor;
     std::vector<T> input;
     std::vector<std::complex<F>> accoutput;
     std::vector<std::complex<F>> auxoutput;
