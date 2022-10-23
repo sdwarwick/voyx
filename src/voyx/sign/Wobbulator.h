@@ -14,7 +14,7 @@ public:
     slope(0),
     intercept(0),
     lfo(),
-    osc()
+    hfo()
   {
   }
 
@@ -22,7 +22,7 @@ public:
     slope((frequencies.first - frequencies.second) / T(2)),
     intercept((frequencies.first + frequencies.second) / T(2)),
     lfo(T(1) / period, samplerate),
-    osc(frequencies.first, samplerate)
+    hfo(frequencies.first, samplerate)
   {
   }
 
@@ -30,7 +30,7 @@ public:
     slope(other.slope),
     intercept(other.intercept),
     lfo(other.lfo),
-    osc(other.osc)
+    hfo(other.hfo)
   {
   }
 
@@ -41,7 +41,7 @@ public:
       slope = other.slope;
       intercept = other.intercept;
       lfo = other.lfo;
-      osc = other.osc;
+      hfo = other.hfo;
     }
 
     return *this;
@@ -49,7 +49,7 @@ public:
 
   std::complex<T> operator()() override
   {
-    return osc(lfo.cos() * slope + intercept);
+    return hfo(lfo.cos() * slope + intercept);
   }
 
   T cos()
@@ -68,6 +68,6 @@ private:
   T intercept;
 
   Oscillator<T> lfo;
-  Oscillator<T> osc;
+  Oscillator<T> hfo;
 
 };
