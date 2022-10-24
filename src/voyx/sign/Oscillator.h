@@ -13,9 +13,9 @@ class Oscillator : public Generator<T>
 public:
 
   Oscillator() :
-    samplerate(1),
-    omega(1),
-    phasor(1)
+    samplerate(0),
+    omega(0),
+    phasor(0)
   {
   }
 

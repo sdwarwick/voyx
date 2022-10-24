@@ -18,7 +18,7 @@ public:
   {
   }
 
-  Wobbulator(std::pair<T, T> frequencies, T period, const T samplerate) :
+  Wobbulator(const std::pair<T, T> frequencies, const T period, const T samplerate) :
     slope((frequencies.first - frequencies.second) / T(2)),
     intercept((frequencies.first + frequencies.second) / T(2)),
     lfo(T(1) / period, samplerate),
