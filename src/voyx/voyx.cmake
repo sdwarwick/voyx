@@ -21,7 +21,6 @@ target_link_libraries(voyx
           easyloggingpp
           fmt
           mlinterp
-          openmp
           pocketfft
           qcustomplot
           qt
