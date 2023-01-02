@@ -37,13 +37,13 @@ public:
   template<typename V>
   friend std::complex<V> operator+(Generator<T>& g, const V v)
   {
-    return v + g();
+    return g() + v;
   }
 
   template<typename V>
   friend std::complex<V> operator+(Generator<T>& g, const std::complex<V>& v)
   {
-    return v + g();
+    return g() + v;
   }
 
   template<typename V>
@@ -69,13 +69,13 @@ public:
   template<typename V>
   friend std::complex<V> operator-(Generator<T>& g, const V v)
   {
-    return v - g();
+    return g() - v;
   }
 
   template<typename V>
   friend std::complex<V> operator-(Generator<T>& g, const std::complex<V>& v)
   {
-    return v - g();
+    return g() - v;
   }
 
   template<typename V>
@@ -101,13 +101,13 @@ public:
   template<typename V>
   friend std::complex<V> operator*(Generator<T>& g, const V v)
   {
-    return v * g();
+    return g() * v;
   }
 
   template<typename V>
   friend std::complex<V> operator*(Generator<T>& g, const std::complex<V>& v)
   {
-    return v * g();
+    return g() * v;
   }
 
   template<typename V>
@@ -133,13 +133,13 @@ public:
   template<typename V>
   friend std::complex<V> operator/(Generator<T>& g, const V v)
   {
-    return v / g();
+    return g() / v;
   }
 
   template<typename V>
   friend std::complex<V> operator/(Generator<T>& g, const std::complex<V>& v)
   {
-    return v / g();
+    return g() / v;
   }
 
   template<typename V>
