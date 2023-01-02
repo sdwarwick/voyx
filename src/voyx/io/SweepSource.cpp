@@ -21,7 +21,7 @@ bool SweepSource::read(const size_t index, std::function<void(const voyx::vector
 {
   for (size_t i = 0; i < frame.size(); ++i)
   {
-    frame[i] = sample_t(amplitude * osc.sin());
+    frame[i] = amplitude * osc.sin();
   }
 
   callback(frame);

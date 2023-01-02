@@ -19,7 +19,7 @@ bool NoiseSource::read(const size_t index, std::function<void(const voyx::vector
 {
   for (size_t i = 0; i < frame.size(); ++i)
   {
-    frame[i] = sample_t(amplitude * noise++);
+    frame[i] = amplitude * noise++;
   }
 
   callback(frame);
