@@ -1,12 +1,5 @@
 #include <voyx/Source.h>
 
-#ifdef VOYXMETAL
-#define NS_PRIVATE_IMPLEMENTATION
-#include <Foundation/Foundation.hpp>
-#define MTL_PRIVATE_IMPLEMENTATION
-#include <Metal/Metal.hpp>
-#endif
-
 #include <voyx/io/AudioProbe.h>
 #include <voyx/io/MidiObserver.h>
 #include <voyx/io/MidiProbe.h>
@@ -25,7 +18,6 @@
 
 #include <voyx/dsp/BypassPipeline.h>
 #include <voyx/dsp/InverseSynthPipeline.h>
-#include <voyx/dsp/MetalTestPipeline.h>
 #include <voyx/dsp/OpenclTestPipeline.h>
 #include <voyx/dsp/RobotPipeline.h>
 #include <voyx/dsp/SdftTestPipeline.h>
@@ -186,7 +178,6 @@ int main(int argc, char** argv)
 
   // auto pipe = std::make_shared<BypassPipeline>(source, sink);
   // auto pipe = std::make_shared<InverseSynthPipeline>(samplerate, framesize, hopsize, source, sink, observer, plot);
-  // auto pipe = std::make_shared<MetalTestPipeline>(samplerate, framesize, dftsize, source, sink);
   // auto pipe = std::make_shared<OpenclTestPipeline>(samplerate, framesize, dftsize, source, sink);
   // auto pipe = std::make_shared<RobotPipeline>(samplerate, framesize, dftsize, source, sink, observer, plot);
   auto pipe = std::make_shared<SdftTestPipeline>(samplerate, framesize, dftsize, source, sink, observer, plot);

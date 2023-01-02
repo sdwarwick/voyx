@@ -10,7 +10,6 @@ endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/lib/cpm.cmake")
 
-include("${CMAKE_CURRENT_LIST_DIR}/lib/metal.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/lib/opencl.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/lib/qt.cmake")
 
