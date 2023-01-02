@@ -34,6 +34,9 @@ public:
   void xrange(const double max) override;
   void xrange(const double min, const double max) override;
 
+  void xline(const std::optional<double> x) override;
+  void yline(const std::optional<double> y) override;
+
   void plot(const std::span<const float> y) override;
   void plot(const std::span<const double> y) override;
 
@@ -51,7 +54,10 @@ private:
   std::shared_ptr<QApplication> application;
   std::shared_ptr<QWidget> widget;
   std::shared_ptr<QGridLayout> layout;
+
   std::vector<std::shared_ptr<QCustomPlot>> plots;
+  std::map<QCustomPlot*, QCPItemStraightLine*> xlines;
+  std::map<QCustomPlot*, QCPItemStraightLine*> ylines;
 
   struct
   {
@@ -59,6 +65,8 @@ private:
     bool yauto = true;
     std::optional<std::pair<double, double>> xrange;
     std::vector<double> ydata;
+    std::optional<double> xline;
+    std::optional<double> yline;
   }
   data;
 

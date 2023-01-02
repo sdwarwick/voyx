@@ -162,6 +162,28 @@ void QPlot::xrange(const double min, const double max)
   data.xrange = std::pair<double, double>(min, max);
 }
 
+void QPlot::xline(const std::optional<double> x)
+{
+  if (pause)
+  {
+    return;
+  }
+
+  std::lock_guard lock(mutex);
+  data.xline = x;
+}
+
+void QPlot::yline(const std::optional<double> y)
+{
+  if (pause)
+  {
+    return;
+  }
+
+  std::lock_guard lock(mutex);
+  data.yline = y;
+}
+
 void QPlot::plot(const std::span<const float> y)
 {
   if (pause)
@@ -208,6 +230,25 @@ void QPlot::addPlot(const size_t row, const size_t col, const size_t graphs)
   });
 
   plots.push_back(plot);
+
+  auto xline = new QCPItemStraightLine(plot.get());
+  auto yline = new QCPItemStraightLine(plot.get());
+  {
+    QPen pen;
+
+    pen.setColor(getLineColor(0));
+    pen.setWidth(getLineWidth(0));
+    pen.setStyle(Qt::DashLine);
+
+    xline->setPen(pen);
+    yline->setPen(pen);
+
+    xline->setVisible(false);
+    yline->setVisible(false);
+  }
+
+  xlines[plot.get()] = xline;
+  ylines[plot.get()] = yline;
 }
 
 QCustomPlot* QPlot::getPlot(const size_t row, const size_t col) const
@@ -250,12 +291,16 @@ void QPlot::loop()
     bool xauto, yauto;
     std::optional<std::pair<double, double>> xrange;
     std::vector<double> ydata;
+    std::optional<double> xline;
+    std::optional<double> yline;
     {
       std::lock_guard lock(mutex);
       xauto = data.xauto;
       yauto = data.yauto;
       xrange = data.xrange;
       ydata = data.ydata;
+      xline = data.xline;
+      yline = data.yline;
     }
 
     std::vector<double> xdata;
@@ -290,6 +335,30 @@ void QPlot::loop()
       }
 
       plot->graph(graph)->setData(x, y);
+
+      // x,y lines
+
+      if (xline.has_value())
+      {
+        xlines.at(plot)->setVisible(true);
+        xlines.at(plot)->point1->setCoords(xline.value(), 0);
+        xlines.at(plot)->point2->setCoords(xline.value(), 1);
+      }
+      else
+      {
+        xlines.at(plot)->setVisible(false);
+      }
+
+      if (yline.has_value())
+      {
+        ylines.at(plot)->setVisible(true);
+        ylines.at(plot)->point1->setCoords(0, yline.value());
+        ylines.at(plot)->point2->setCoords(1, yline.value());
+      }
+      else
+      {
+        ylines.at(plot)->setVisible(false);
+      }
 
       // auto range
 
