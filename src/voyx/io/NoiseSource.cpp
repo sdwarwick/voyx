@@ -2,12 +2,12 @@
 
 #include <voyx/Source.h>
 
-NoiseSource::NoiseSource(voyx_t samplerate, size_t framesize, size_t buffersize) :
+NoiseSource::NoiseSource(double samplerate, size_t framesize, size_t buffersize) :
   NoiseSource(1, samplerate, framesize, buffersize)
 {
 }
 
-NoiseSource::NoiseSource(voyx_t amplitude, voyx_t samplerate, size_t framesize, size_t buffersize) :
+NoiseSource::NoiseSource(double amplitude, double samplerate, size_t framesize, size_t buffersize) :
   Source(samplerate, framesize, buffersize),
   amplitude(amplitude),
   noise(),
@@ -15,11 +15,11 @@ NoiseSource::NoiseSource(voyx_t amplitude, voyx_t samplerate, size_t framesize, 
 {
 }
 
-bool NoiseSource::read(const size_t index, std::function<void(const voyx::vector<voyx_t> frame)> callback)
+bool NoiseSource::read(const size_t index, std::function<void(const voyx::vector<sample_t> frame)> callback)
 {
   for (size_t i = 0; i < frame.size(); ++i)
   {
-    frame[i] = amplitude * noise++;
+    frame[i] = sample_t(amplitude * noise++);
   }
 
   callback(frame);

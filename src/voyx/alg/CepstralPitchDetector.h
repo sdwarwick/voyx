@@ -8,13 +8,13 @@ class CepstralPitchDetector
 
 public:
 
-  CepstralPitchDetector(const std::pair<voyx_t, voyx_t> roi, const voyx_t samplerate) :
+  CepstralPitchDetector(const std::pair<double, double> roi, const double samplerate) :
     roi(roi),
     samplerate(samplerate)
   {
   }
 
-  voyx_t operator()(const voyx::vector<T> cepstrum) const
+  double operator()(const voyx::vector<T> cepstrum) const
   {
     const size_t nmin = size_t(0);
     const size_t nmax = cepstrum.size() / 2;
@@ -44,7 +44,7 @@ public:
 
 private:
 
-  const std::pair<voyx_t, voyx_t> roi;
-  const voyx_t samplerate;
+  const std::pair<double, double> roi;
+  const double samplerate;
 
 };

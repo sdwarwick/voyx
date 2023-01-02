@@ -5,7 +5,7 @@
 namespace $$::dft
 {
   template<typename T>
-  static inline T bin(const T freq, const voyx_t samplerate, const size_t framesize)
+  static inline T bin(const T freq, const double samplerate, const size_t framesize)
   {
     static_assert(std::is_floating_point<T>::value);
 
@@ -14,7 +14,7 @@ namespace $$::dft
   }
 
   template<typename T>
-  static inline T freq(const T bin, const voyx_t samplerate, const size_t framesize)
+  static inline T freq(const T bin, const double samplerate, const size_t framesize)
   {
     static_assert(std::is_floating_point<T>::value);
 
@@ -23,7 +23,7 @@ namespace $$::dft
   }
 
   template<typename T>
-  static inline std::vector<T> bins(const std::vector<T>& freqs, const voyx_t samplerate, const size_t framesize)
+  static inline std::vector<T> bins(const std::vector<T>& freqs, const double samplerate, const size_t framesize)
   {
     static_assert(std::is_floating_point<T>::value);
 
@@ -46,7 +46,7 @@ namespace $$::dft
   }
 
   template<typename T>
-  static inline std::vector<T> freqs(const voyx_t samplerate, const size_t framesize)
+  static inline std::vector<T> freqs(const double samplerate, const size_t framesize)
   {
     static_assert(std::is_floating_point<T>::value);
 

@@ -5,7 +5,7 @@
 #include <voyx/etc/Timer.h>
 #include <voyx/dsp/Pipeline.h>
 
-template<typename T = voyx_t>
+template<typename T = sample_t>
 class AsyncPipeline : public Pipeline<T>
 {
 

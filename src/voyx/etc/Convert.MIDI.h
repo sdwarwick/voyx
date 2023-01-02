@@ -5,7 +5,7 @@
 namespace $$::midi
 {
   template<typename T>
-  static inline T key(const T freq, const voyx_t concertpitch)
+  static inline T key(const T freq, const double concertpitch)
   {
     static_assert(std::is_floating_point<T>::value);
 
@@ -14,7 +14,7 @@ namespace $$::midi
   }
 
   template<typename T>
-  static inline T freq(const T key, const voyx_t concertpitch)
+  static inline T freq(const T key, const double concertpitch)
   {
     static_assert(std::is_floating_point<T>::value);
 
@@ -23,7 +23,7 @@ namespace $$::midi
   }
 
   template<typename T>
-  static inline std::vector<T> keys(const std::vector<T>& freqs, const voyx_t concertpitch)
+  static inline std::vector<T> keys(const std::vector<T>& freqs, const double concertpitch)
   {
     static_assert(std::is_floating_point<T>::value);
 
@@ -46,7 +46,7 @@ namespace $$::midi
   }
 
   template<typename T>
-  static inline std::vector<T> freqs(const voyx_t concertpitch)
+  static inline std::vector<T> freqs(const double concertpitch)
   {
     static_assert(std::is_floating_point<T>::value);
 

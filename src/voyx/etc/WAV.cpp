@@ -5,7 +5,7 @@
 
 #include <dr_wav.h>
 
-void WAV::read(const std::string& path, std::vector<double>& data, const voyx_t samplerate)
+void WAV::read(const std::string& path, std::vector<double>& data, const double samplerate)
 {
   std::vector<float> nativedata;
 
@@ -14,7 +14,7 @@ void WAV::read(const std::string& path, std::vector<double>& data, const voyx_t 
   data.assign(nativedata.begin(), nativedata.end());
 }
 
-void WAV::read(const std::string& path, std::vector<float>& data, const voyx_t samplerate)
+void WAV::read(const std::string& path, std::vector<float>& data, const double samplerate)
 {
   drwav wav;
 
@@ -77,14 +77,14 @@ void WAV::read(const std::string& path, std::vector<float>& data, const voyx_t s
   }
 }
 
-void WAV::write(const std::string& path, const std::vector<double>& data, const voyx_t samplerate)
+void WAV::write(const std::string& path, const std::vector<double>& data, const double samplerate)
 {
   std::vector<float> nativedata(data.begin(), data.end());
 
   WAV::write(path, nativedata, samplerate);
 }
 
-void WAV::write(const std::string& path, const std::vector<float>& data, const voyx_t samplerate)
+void WAV::write(const std::string& path, const std::vector<float>& data, const double samplerate)
 {
   const size_t samples = data.size();
   const size_t channels = 1;

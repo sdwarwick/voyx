@@ -13,7 +13,7 @@ public:
   {
   }
 
-  SRC(const std::pair<voyx_t, voyx_t>& samplerates) :
+  SRC(const std::pair<double, double>& samplerates) :
     samplerates(samplerates)
   {
   }
@@ -23,7 +23,7 @@ public:
   {
   }
 
-  SRC& operator=(const std::pair<voyx_t, voyx_t>& samplerates)
+  SRC& operator=(const std::pair<double, double>& samplerates)
   {
     this->samplerates = samplerates;
 
@@ -40,7 +40,7 @@ public:
     return *this;
   }
 
-  voyx_t quotient() const
+  double quotient() const
   {
     return samplerates.second / samplerates.first;
   }
@@ -116,6 +116,6 @@ public:
 
 private:
 
-  std::pair<voyx_t, voyx_t> samplerates;
+  std::pair<double, double> samplerates;
 
 };

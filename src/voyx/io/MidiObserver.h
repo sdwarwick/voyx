@@ -9,16 +9,16 @@ class MidiObserver
 
 public:
 
-  MidiObserver(const std::string& name, const voyx_t concertpitch);
+  MidiObserver(const std::string& name, const double concertpitch);
   ~MidiObserver();
 
-  voyx_t concertpitch() const;
+  double concertpitch() const;
 
   std::vector<int> state();
-  std::vector<voyx_t> frequencies();
+  std::vector<double> frequencies();
 
-  std::vector<voyx_t> mask();
-  std::vector<voyx_t> imask();
+  std::vector<double> mask();
+  std::vector<double> imask();
 
   bool sustain();
 
@@ -28,7 +28,7 @@ public:
 private:
 
   const std::string midi_device_name;
-  const voyx_t midi_concert_pitch;
+  const double midi_concert_pitch;
 
   std::vector<int> midi_key_state;
   bool midi_control_sustain;

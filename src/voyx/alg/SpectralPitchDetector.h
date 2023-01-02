@@ -8,13 +8,13 @@ class SpectralPitchDetector
 
 public:
 
-  SpectralPitchDetector(const std::pair<voyx_t, voyx_t> roi, const voyx_t samplerate) :
+  SpectralPitchDetector(const std::pair<double, double> roi, const double samplerate) :
     roi(roi),
     samplerate(samplerate)
   {
   }
 
-  voyx_t operator()(const voyx::vector<T> spectrum) const
+  double operator()(const voyx::vector<T> spectrum) const
   {
     const size_t framesize = spectrum.size() * 2;
 
@@ -46,7 +46,7 @@ public:
 
 private:
 
-  const std::pair<voyx_t, voyx_t> roi;
-  const voyx_t samplerate;
+  const std::pair<double, double> roi;
+  const double samplerate;
 
 };

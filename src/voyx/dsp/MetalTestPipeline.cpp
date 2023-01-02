@@ -21,8 +21,8 @@ MTL::Buffer* y;
 
 // std::binary_semaphore semaphore(0);
 
-MetalTestPipeline::MetalTestPipeline(const voyx_t samplerate, const size_t framesize, const size_t dftsize, std::shared_ptr<Source<voyx_t>> source, std::shared_ptr<Sink<voyx_t>> sink) :
-  AsyncPipeline<voyx_t>(source, sink),
+MetalTestPipeline::MetalTestPipeline(const double samplerate, const size_t framesize, const size_t dftsize, std::shared_ptr<Source<sample_t>> source, std::shared_ptr<Sink<sample_t>> sink) :
+  AsyncPipeline<sample_t>(source, sink),
   samplerate(samplerate),
   framesize(framesize),
   dftsize(dftsize)
@@ -53,13 +53,13 @@ MetalTestPipeline::MetalTestPipeline(const voyx_t samplerate, const size_t frame
   grid = MTL::Size::Make(framesize, 1, 1); // threads per grid
   group = MTL::Size::Make(threads, 1, 1);  // threads per thread group
 
-  x = device->newBuffer(framesize * sizeof(voyx_t), MTL::ResourceStorageModeShared);
-  y = device->newBuffer(framesize * sizeof(voyx_t), MTL::ResourceStorageModeShared);
+  x = device->newBuffer(framesize * sizeof(sample_t), MTL::ResourceStorageModeShared);
+  y = device->newBuffer(framesize * sizeof(sample_t), MTL::ResourceStorageModeShared);
 }
 
-void MetalTestPipeline::begin(const size_t index, const voyx::vector<voyx_t> input)
+void MetalTestPipeline::begin(const size_t index, const voyx::vector<sample_t> input)
 {
-  std::memcpy(x->contents(), input.data(), framesize * sizeof(voyx_t));
+  std::memcpy(x->contents(), input.data(), framesize * sizeof(sample_t));
 
   MTL::CommandBuffer* command = queue->commandBuffer();
   NULLERROR(command, "Unable to create Metal command buffer!");
@@ -82,9 +82,9 @@ void MetalTestPipeline::begin(const size_t index, const voyx::vector<voyx_t> inp
     // std::cout << buffer->label()->cString(NS::ASCIIStringEncoding) << std::endl;
     // semaphore.release();
 
-    // std::memcpy(output.data(), y->contents(), framesize * sizeof(voyx_t));
+    // std::memcpy(output.data(), y->contents(), framesize * sizeof(sample_t));
 
-    voyx::vector<voyx_t> output((voyx_t*)y->contents(), framesize);
+    voyx::vector<sample_t> output((sample_t*)y->contents(), framesize);
 
     end(index, output);
   });

@@ -7,12 +7,12 @@
 
 #include <RtAudio.h>
 
-class AudioSource : public Source<voyx_t>
+class AudioSource : public Source<sample_t>
 {
 
 public:
 
-  AudioSource(const std::string& name, voyx_t samplerate, size_t framesize, size_t buffersize);
+  AudioSource(const std::string& name, double samplerate, size_t framesize, size_t buffersize);
 
   void open() override;
   void close() override;
@@ -20,19 +20,19 @@ public:
   void start() override;
   void stop() override;
 
-  bool read(const size_t index, std::function<void(const voyx::vector<voyx_t> frame)> callback) override;
+  bool read(const size_t index, std::function<void(const voyx::vector<sample_t> frame)> callback) override;
 
 private:
 
   struct InputFrame
   {
     size_t index;
-    std::vector<voyx_t> frame;
+    std::vector<sample_t> frame;
   };
 
   const std::string audio_device_name;
   FIFO<InputFrame> audio_frame_buffer;
-  SRC<voyx_t> audio_samplerate_converter;
+  SRC<sample_t> audio_samplerate_converter;
 
   RtAudio audio;
 

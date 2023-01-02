@@ -49,8 +49,8 @@
 #include <voyx/etc/Matrix.h>
 
 /**
- * And finally common data type definition,
- * e.g. float or double.
+ * And finally common data type definitions.
  **/
 
-typedef float voyx_t;
+typedef float sample_t;                // time domain
+typedef std::complex<double> phasor_t; // frequency domain

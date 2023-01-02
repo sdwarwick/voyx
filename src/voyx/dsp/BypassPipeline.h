@@ -3,15 +3,15 @@
 #include <voyx/Header.h>
 #include <voyx/dsp/SyncPipeline.h>
 
-class BypassPipeline : public SyncPipeline<voyx_t>
+class BypassPipeline : public SyncPipeline<sample_t>
 {
 
 public:
 
-  BypassPipeline(std::shared_ptr<Source<voyx_t>> source, std::shared_ptr<Sink<voyx_t>> sink);
+  BypassPipeline(std::shared_ptr<Source<sample_t>> source, std::shared_ptr<Sink<sample_t>> sink);
 
 protected:
 
-  void operator()(const size_t index, const voyx::vector<voyx_t> input, voyx::vector<voyx_t> output) override;
+  void operator()(const size_t index, const voyx::vector<sample_t> input, voyx::vector<sample_t> output) override;
 
 };

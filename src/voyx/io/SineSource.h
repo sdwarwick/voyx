@@ -4,23 +4,23 @@
 #include <voyx/io/Source.h>
 #include <voyx/sign/Oscillator.h>
 
-class SineSource : public Source<voyx_t>
+class SineSource : public Source<sample_t>
 {
 
 public:
 
-  SineSource(voyx_t frequency, voyx_t samplerate, size_t framesize, size_t buffersize);
-  SineSource(voyx_t amplitude, voyx_t frequency, voyx_t samplerate, size_t framesize, size_t buffersize);
+  SineSource(double frequency, double samplerate, size_t framesize, size_t buffersize);
+  SineSource(double amplitude, double frequency, double samplerate, size_t framesize, size_t buffersize);
 
-  bool read(const size_t index, std::function<void(const voyx::vector<voyx_t> frame)> callback) override;
+  bool read(const size_t index, std::function<void(const voyx::vector<sample_t> frame)> callback) override;
 
 private:
 
-  const voyx_t amplitude;
-  const voyx_t frequency;
+  const double amplitude;
+  const double frequency;
 
-  Oscillator<voyx_t> osc;
+  Oscillator<double> osc;
 
-  std::vector<voyx_t> frame;
+  std::vector<sample_t> frame;
 
 };

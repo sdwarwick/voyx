@@ -4,7 +4,7 @@
 #include <voyx/io/Sink.h>
 #include <voyx/io/Source.h>
 
-template<typename T = voyx_t>
+template<typename T = sample_t>
 class Pipeline
 {
 

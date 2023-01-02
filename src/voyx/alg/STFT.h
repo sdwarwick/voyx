@@ -17,16 +17,16 @@ public:
     hopsize(hopsize),
     fft(framesize)
   {
-    const std::vector<F> window = Window<F>(framesize);
+    const std::vector<T> window = Window<T>(framesize);
 
     windows.analysis = window;
     windows.synthesis = window;
 
-    const F unitygain = hopsize / std::inner_product(
-      windows.synthesis.begin(), windows.synthesis.end(), windows.synthesis.begin(), F(0));
+    const T unitygain = hopsize / std::inner_product(
+      windows.synthesis.begin(), windows.synthesis.end(), windows.synthesis.begin(), T(0));
 
     std::transform(windows.synthesis.begin(), windows.synthesis.end(), windows.synthesis.begin(),
-      [unitygain](F value) { return value * unitygain; });
+      [unitygain](T value) { return value * unitygain; });
 
     for (size_t hop = 0; (hop + framesize) < (framesize * 2); hop += hopsize)
     {
@@ -96,8 +96,8 @@ private:
 
   struct
   {
-    std::vector<F> analysis;
-    std::vector<F> synthesis;
+    std::vector<T> analysis;
+    std::vector<T> synthesis;
   }
   windows;
 
@@ -110,7 +110,7 @@ private:
   }
   data;
 
-  static void reject(voyx::matrix<F> frames, const voyx::vector<T> input, const std::vector<size_t>& hops, const std::vector<F>& window)
+  static void reject(voyx::matrix<F> frames, const voyx::vector<T> input, const std::vector<size_t>& hops, const std::vector<T>& window)
   {
     for (size_t i = 0; i < hops.size(); ++i)
     {
@@ -124,7 +124,7 @@ private:
     }
   }
 
-  static void inject(const voyx::matrix<F> frames, voyx::vector<T> output, const std::vector<size_t>& hops, const std::vector<F>& window)
+  static void inject(const voyx::matrix<F> frames, voyx::vector<T> output, const std::vector<size_t>& hops, const std::vector<T>& window)
   {
     for (size_t i = 0; i < hops.size(); ++i)
     {

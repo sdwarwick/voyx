@@ -2,7 +2,7 @@
 
 #include <voyx/Source.h>
 
-AudioSink::AudioSink(const std::string& name, voyx_t samplerate, size_t framesize, size_t buffersize) :
+AudioSink::AudioSink(const std::string& name, double samplerate, size_t framesize, size_t buffersize) :
   Sink(samplerate, framesize, buffersize),
   audio_device_name(name),
   audio_sync_semaphore(buffersize),
@@ -88,7 +88,7 @@ void AudioSink::open()
   stream_parameters.nChannels = 1;
   stream_parameters.firstChannel = 0;
 
-  const RtAudioFormat stream_format = (typeid(voyx_t) == typeid(float)) ? RTAUDIO_FLOAT32 : RTAUDIO_FLOAT64;
+  const RtAudioFormat stream_format = (typeid(sample_t) == typeid(float)) ? RTAUDIO_FLOAT32 : RTAUDIO_FLOAT64;
   uint32_t stream_samplerate = device.preferredSampleRate;
   uint32_t stream_framesize = static_cast<uint32_t>(framesize());
 
@@ -173,7 +173,7 @@ void AudioSink::stop()
   audio.stopStream();
 }
 
-bool AudioSink::write(const size_t index, const voyx::vector<voyx_t> frame)
+bool AudioSink::write(const size_t index, const voyx::vector<sample_t> frame)
 {
   const bool ok = audio_frame_buffer.write([&](OutputFrame& output)
   {
@@ -207,8 +207,8 @@ int AudioSink::callback(void* output_frame_data, void* input_frame_data, uint32_
                         framesize, output.frame.size(), audio_samplerate_converter.quotient());
     }
 
-    voyx::vector<voyx_t> src = { output.frame.data(), output.frame.size() };
-    voyx::vector<voyx_t> dst = { static_cast<voyx_t*>(output_frame_data), framesize };
+    voyx::vector<sample_t> src = { output.frame.data(), output.frame.size() };
+    voyx::vector<sample_t> dst = { static_cast<sample_t*>(output_frame_data), framesize };
 
     audio_samplerate_converter(src, dst);
   });

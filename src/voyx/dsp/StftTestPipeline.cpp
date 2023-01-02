@@ -2,8 +2,8 @@
 
 #include <voyx/Source.h>
 
-StftTestPipeline::StftTestPipeline(const voyx_t samplerate, const size_t framesize, const size_t hopsize,
-                                   std::shared_ptr<Source<voyx_t>> source, std::shared_ptr<Sink<voyx_t>> sink,
+StftTestPipeline::StftTestPipeline(const double samplerate, const size_t framesize, const size_t hopsize,
+                                   std::shared_ptr<Source<sample_t>> source, std::shared_ptr<Sink<sample_t>> sink,
                                    std::shared_ptr<MidiObserver> midi, std::shared_ptr<Plot> plot) :
   StftPipeline(samplerate, framesize, hopsize, source, sink),
   vocoder(samplerate, framesize, hopsize),
@@ -19,14 +19,14 @@ StftTestPipeline::StftTestPipeline(const voyx_t samplerate, const size_t framesi
 }
 
 void StftTestPipeline::operator()(const size_t index,
-                                  const voyx::vector<voyx_t> signal,
-                                  voyx::matrix<std::complex<double>> dfts)
+                                  const voyx::vector<sample_t> signal,
+                                  voyx::matrix<phasor_t> dfts)
 {
   if (plot != nullptr)
   {
     const auto dft = dfts.front();
 
-    std::vector<voyx_t> abs(dft.size());
+    std::vector<double> abs(dft.size());
 
     for (size_t i = 0; i < dft.size(); ++i)
     {

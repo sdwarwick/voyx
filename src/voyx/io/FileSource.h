@@ -3,23 +3,23 @@
 #include <voyx/Header.h>
 #include <voyx/io/Source.h>
 
-class FileSource : public Source<voyx_t>
+class FileSource : public Source<sample_t>
 {
 
 public:
 
-  FileSource(const std::string& path, voyx_t samplerate, size_t framesize, size_t buffersize);
+  FileSource(const std::string& path, double samplerate, size_t framesize, size_t buffersize);
 
   void open() override;
   void close() override;
 
-  bool read(const size_t index, std::function<void(const voyx::vector<voyx_t> frame)> callback) override;
+  bool read(const size_t index, std::function<void(const voyx::vector<sample_t> frame)> callback) override;
 
 private:
 
   const std::string path;
 
-  std::vector<voyx_t> data;
-  std::vector<voyx_t> frame;
+  std::vector<sample_t> data;
+  std::vector<sample_t> frame;
 
 };

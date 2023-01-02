@@ -8,20 +8,20 @@
 #include <Foundation/Foundation.hpp>
 #include <Metal/Metal.hpp>
 
-class MetalTestPipeline : public AsyncPipeline<voyx_t>
+class MetalTestPipeline : public AsyncPipeline<sample_t>
 {
 
 public:
 
-  MetalTestPipeline(const voyx_t samplerate, const size_t framesize, const size_t dftsize, std::shared_ptr<Source<voyx_t>> source, std::shared_ptr<Sink<voyx_t>> sink);
+  MetalTestPipeline(const double samplerate, const size_t framesize, const size_t dftsize, std::shared_ptr<Source<sample_t>> source, std::shared_ptr<Sink<sample_t>> sink);
 
 protected:
 
-  const voyx_t samplerate;
+  const double samplerate;
   const size_t framesize;
   const size_t dftsize;
 
-  void begin(const size_t index, const voyx::vector<voyx_t> input) override;
+  void begin(const size_t index, const voyx::vector<sample_t> input) override;
 
 private:
 

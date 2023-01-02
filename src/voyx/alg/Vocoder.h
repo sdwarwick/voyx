@@ -8,7 +8,7 @@ class Vocoder
 
 public:
 
-  Vocoder(const voyx_t samplerate, const size_t framesize, const size_t hopsize) :
+  Vocoder(const double samplerate, const size_t framesize, const size_t hopsize) :
     framesize(framesize),
     hopsize(hopsize),
     dftsize(framesize / 2),

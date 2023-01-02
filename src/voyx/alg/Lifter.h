@@ -9,7 +9,7 @@ class Lifter
 
 public:
 
-  Lifter(const voyx_t quefrency, const voyx_t samplerate, const size_t framesize) :
+  Lifter(const double quefrency, const double samplerate, const size_t framesize) :
     samplerate(samplerate),
     quefrency(static_cast<size_t>(quefrency * samplerate)),
     fft(framesize),
@@ -136,7 +136,7 @@ public:
 
 private:
 
-  const voyx_t samplerate;
+  const double samplerate;
   const size_t quefrency;
 
   const FFT<T> fft;

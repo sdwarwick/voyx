@@ -2,7 +2,7 @@
 
 #include <voyx/Source.h>
 
-MidiObserver::MidiObserver(const std::string& name, const voyx_t concertpitch) :
+MidiObserver::MidiObserver(const std::string& name, const double concertpitch) :
   midi_device_name(name),
   midi_concert_pitch(concertpitch),
   midi_key_state(128),
@@ -18,7 +18,7 @@ MidiObserver::~MidiObserver()
   stop();
 }
 
-voyx_t MidiObserver::concertpitch() const
+double MidiObserver::concertpitch() const
 {
   return midi_concert_pitch;
 }
@@ -29,19 +29,19 @@ std::vector<int> MidiObserver::state()
   return midi_key_state;
 }
 
-std::vector<voyx_t> MidiObserver::frequencies()
+std::vector<double> MidiObserver::frequencies()
 {
   const std::vector<int> state = this->state();
 
-  std::vector<voyx_t> frequencies;
+  std::vector<double> frequencies;
 
   frequencies.reserve(state.size());
 
-  for (voyx_t key = 0; key < state.size(); ++key)
+  for (double key = 0; key < state.size(); ++key)
   {
     if (state[key])
     {
-      const voyx_t frequency = $$::midi::freq(key, concertpitch());
+      const double frequency = $$::midi::freq(key, concertpitch());
 
       frequencies.push_back(frequency);
     }
@@ -50,24 +50,24 @@ std::vector<voyx_t> MidiObserver::frequencies()
   return frequencies;
 }
 
-std::vector<voyx_t> MidiObserver::mask()
+std::vector<double> MidiObserver::mask()
 {
   const std::vector<int> src = state();
-  std::vector<voyx_t> dst(src.size());
+  std::vector<double> dst(src.size());
 
   std::transform(src.begin(), src.end(), dst.begin(),
-    [](voyx_t value) { return value / voyx_t(127); });
+    [](double value) { return value / 127.0; });
 
   return dst;
 }
 
-std::vector<voyx_t> MidiObserver::imask()
+std::vector<double> MidiObserver::imask()
 {
   const std::vector<int> src = state();
-  std::vector<voyx_t> dst(src.size());
+  std::vector<double> dst(src.size());
 
   std::transform(src.begin(), src.end(), dst.begin(),
-    [](voyx_t value) { return (127 - value) / voyx_t(127); });
+    [](double value) { return (127.0 - value) / 127.0; });
 
   return dst;
 }

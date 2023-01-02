@@ -3,7 +3,7 @@
 #include <voyx/Source.h>
 #include <voyx/etc/WAV.h>
 
-FileSink::FileSink(const std::string& path, voyx_t samplerate, size_t framesize, size_t buffersize) :
+FileSink::FileSink(const std::string& path, double samplerate, size_t framesize, size_t buffersize) :
   Sink(samplerate, framesize, buffersize),
   path(path),
   data(0)
@@ -20,7 +20,7 @@ void FileSink::close()
   WAV::write(path, data, samplerate());
 }
 
-bool FileSink::write(const size_t index, const voyx::vector<voyx_t> frame)
+bool FileSink::write(const size_t index, const voyx::vector<sample_t> frame)
 {
   const size_t oldsize = data.size();
   const size_t newsize = oldsize + frame.size();

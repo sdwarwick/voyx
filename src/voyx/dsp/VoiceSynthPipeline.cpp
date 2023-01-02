@@ -2,8 +2,8 @@
 
 #include <voyx/Source.h>
 
-VoiceSynthPipeline::VoiceSynthPipeline(const voyx_t samplerate, const size_t framesize, const size_t hopsize,
-                                       std::shared_ptr<Source<voyx_t>> source, std::shared_ptr<Sink<voyx_t>> sink,
+VoiceSynthPipeline::VoiceSynthPipeline(const double samplerate, const size_t framesize, const size_t hopsize,
+                                       std::shared_ptr<Source<sample_t>> source, std::shared_ptr<Sink<sample_t>> sink,
                                        std::shared_ptr<MidiObserver> midi, std::shared_ptr<Plot> plot) :
   StftPipeline(samplerate, framesize, hopsize, source, sink),
   vocoder(samplerate, framesize, hopsize),
@@ -23,15 +23,15 @@ VoiceSynthPipeline::VoiceSynthPipeline(const voyx_t samplerate, const size_t fra
 }
 
 void VoiceSynthPipeline::operator()(const size_t index,
-                                    const voyx::vector<voyx_t> signal,
-                                    voyx::matrix<std::complex<voyx_t>> dfts)
+                                    const voyx::vector<sample_t> signal,
+                                    voyx::matrix<phasor_t> dfts)
 {
   if (plot != nullptr)
   {
-    FFT<voyx_t> fft(framesize * 2);
+    FFT<sample_t> fft(framesize * 2);
 
-    std::vector<std::complex<voyx_t>> dft = fft.fft(signal);
-    std::vector<voyx_t> abs(dft.size());
+    std::vector<std::complex<sample_t>> dft = fft.fft(signal);
+    std::vector<double> abs(dft.size());
 
     for (size_t i = 0; i < dft.size(); ++i)
     {
@@ -43,10 +43,10 @@ void VoiceSynthPipeline::operator()(const size_t index,
 
   vocoder.encode(dfts);
 
-  const std::vector<voyx_t> factors = { 0.5, 1.25, 1.5, 2 };
+  const std::vector<double> factors = { 0.5, 1.25, 1.5, 2 };
 
-  std::vector<std::complex<voyx_t>> buffer(factors.size() * dfts.stride());
-  voyx::matrix<std::complex<voyx_t>> buffers(buffer, dfts.stride());
+  std::vector<phasor_t> buffer(factors.size() * dfts.stride());
+  voyx::matrix<phasor_t> buffers(buffer, dfts.stride());
 
   for (auto dft : dfts)
   {

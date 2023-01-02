@@ -63,8 +63,8 @@ int main(int argc, char** argv)
     ("i,input",   "Input audio device or .wav file name", cxxopts::value<std::string>()->default_value(""))
     ("o,output",  "Output audio device or .wav file name", cxxopts::value<std::string>()->default_value(""))
     ("s,sec",     "Abort after specified number of seconds", cxxopts::value<int>()->default_value("0"))
-    ("a,a4",      "Concert pitch in hertz", cxxopts::value<voyx_t>()->default_value("440"))
-    ("r,sr",      "Sample rate in hertz", cxxopts::value<voyx_t>()->default_value("44100"))
+    ("a,a4",      "Concert pitch in hertz", cxxopts::value<double>()->default_value("440"))
+    ("r,sr",      "Sample rate in hertz", cxxopts::value<double>()->default_value("44100"))
     ("w,window",  "STFT window size", cxxopts::value<int>()->default_value("1024"))
     ("v,overlap", "STFT window overlap", cxxopts::value<int>()->default_value("4"))
     ("b,buffer",  "Audio fifo size", cxxopts::value<int>()->default_value("100"))
@@ -116,8 +116,8 @@ int main(int argc, char** argv)
 
   const int seconds = std::abs(args["sec"].as<int>());
 
-  const voyx_t concertpitch = std::abs(args["a4"].as<voyx_t>());
-  const voyx_t samplerate = std::abs(args["sr"].as<voyx_t>());
+  const double concertpitch = std::abs(args["a4"].as<double>());
+  const double samplerate = std::abs(args["sr"].as<double>());
 
   const size_t framesize = std::abs(args["window"].as<int>());
   const size_t hopsize = framesize / std::abs(args["overlap"].as<int>());

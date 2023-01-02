@@ -7,12 +7,12 @@
 
 #include <RtAudio.h>
 
-class AudioSink : public Sink<voyx_t>
+class AudioSink : public Sink<sample_t>
 {
 
 public:
 
-  AudioSink(const std::string& name, voyx_t samplerate, size_t framesize, size_t buffersize);
+  AudioSink(const std::string& name, double samplerate, size_t framesize, size_t buffersize);
 
   void open() override;
   void close() override;
@@ -20,7 +20,7 @@ public:
   void start() override;
   void stop() override;
 
-  bool write(const size_t index, const voyx::vector<voyx_t> frame) override;
+  bool write(const size_t index, const voyx::vector<sample_t> frame) override;
   bool sync() override;
 
 private:
@@ -28,13 +28,13 @@ private:
   struct OutputFrame
   {
     size_t index;
-    std::vector<voyx_t> frame;
+    std::vector<sample_t> frame;
   };
 
   const std::string audio_device_name;
   std::binary_semaphore audio_sync_semaphore;
   FIFO<OutputFrame> audio_frame_buffer;
-  SRC<voyx_t> audio_samplerate_converter;
+  SRC<sample_t> audio_samplerate_converter;
 
   RtAudio audio;
 

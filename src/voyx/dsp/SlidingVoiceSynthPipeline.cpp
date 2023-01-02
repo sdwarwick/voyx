@@ -2,8 +2,8 @@
 
 #include <voyx/Source.h>
 
-SlidingVoiceSynthPipeline::SlidingVoiceSynthPipeline(const voyx_t samplerate, const size_t framesize, const size_t dftsize,
-                                                     std::shared_ptr<Source<voyx_t>> source, std::shared_ptr<Sink<voyx_t>> sink,
+SlidingVoiceSynthPipeline::SlidingVoiceSynthPipeline(const double samplerate, const size_t framesize, const size_t dftsize,
+                                                     std::shared_ptr<Source<sample_t>> source, std::shared_ptr<Sink<sample_t>> sink,
                                                      std::shared_ptr<MidiObserver> midi, std::shared_ptr<Plot> plot) :
   SdftPipeline(samplerate, framesize, dftsize, source, sink),
   midi(midi),
@@ -22,9 +22,9 @@ SlidingVoiceSynthPipeline::SlidingVoiceSynthPipeline(const voyx_t samplerate, co
 }
 
 void SlidingVoiceSynthPipeline::operator()(const size_t index,
-                                           voyx::matrix<std::complex<double>> dfts)
+                                           voyx::matrix<phasor_t> dfts)
 {
-  std::set<voyx_t> frequencies;
+  std::set<double> frequencies;
   bool sustain = false;
 
   if (midi != nullptr)

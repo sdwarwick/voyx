@@ -14,12 +14,12 @@ class SlidingVoiceSynthPipeline : public SdftPipeline<double>
 
 public:
 
-  SlidingVoiceSynthPipeline(const voyx_t samplerate, const size_t framesize, const size_t dftsize,
-                            std::shared_ptr<Source<voyx_t>> source, std::shared_ptr<Sink<voyx_t>> sink,
+  SlidingVoiceSynthPipeline(const double samplerate, const size_t framesize, const size_t dftsize,
+                            std::shared_ptr<Source<sample_t>> source, std::shared_ptr<Sink<sample_t>> sink,
                             std::shared_ptr<MidiObserver> midi, std::shared_ptr<Plot> plot);
 
   void operator()(const size_t index,
-                  voyx::matrix<std::complex<double>> dfts) override;
+                  voyx::matrix<phasor_t> dfts) override;
 
 private:
 
@@ -32,6 +32,6 @@ private:
   SpectralPitchDetector<double> pda;
   NaivePitchTracking ptr;
 
-  std::set<voyx_t> frequencies;
+  std::set<double> frequencies;
 
 };

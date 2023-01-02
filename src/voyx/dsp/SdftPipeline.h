@@ -4,14 +4,14 @@
 #include <voyx/alg/SDFT.h>
 #include <voyx/dsp/SyncPipeline.h>
 
-template<typename T = voyx_t>
-class SdftPipeline : public SyncPipeline<voyx_t>
+template<typename T = sample_t>
+class SdftPipeline : public SyncPipeline<sample_t>
 {
 
 public:
 
-  SdftPipeline(const voyx_t samplerate, const size_t framesize, const size_t dftsize, std::shared_ptr<Source<voyx_t>> source, std::shared_ptr<Sink<voyx_t>> sink) :
-    SyncPipeline<voyx_t>(source, sink),
+  SdftPipeline(const double samplerate, const size_t framesize, const size_t dftsize, std::shared_ptr<Source<sample_t>> source, std::shared_ptr<Sink<sample_t>> sink) :
+    SyncPipeline<sample_t>(source, sink),
     samplerate(samplerate),
     framesize(framesize),
     dftsize(dftsize),
@@ -22,28 +22,28 @@ public:
 
 protected:
 
-  const voyx_t samplerate;
+  const double samplerate;
   const size_t framesize;
   const size_t dftsize;
 
-  void operator()(const size_t index, const voyx::vector<voyx_t> input, voyx::vector<voyx_t> output) override
+  void operator()(const size_t index, const voyx::vector<sample_t> input, voyx::vector<sample_t> output) override
   {
-    voyx::matrix<std::complex<T>> dfts(data.dfts, dftsize);
+    voyx::matrix<phasor_t> dfts(data.dfts, dftsize);
 
     sdft.sdft(input, dfts);
     (*this)(index, dfts);
     sdft.isdft(dfts, output);
   }
 
-  virtual void operator()(const size_t index, voyx::matrix<std::complex<T>> dfts) = 0;
+  virtual void operator()(const size_t index, voyx::matrix<phasor_t> dfts) = 0;
 
 private:
 
-  SDFT<voyx_t, T> sdft;
+  SDFT<sample_t, phasor_t::value_type> sdft;
 
   struct
   {
-    std::vector<std::complex<T>> dfts;
+    std::vector<phasor_t> dfts;
   }
   data;
 

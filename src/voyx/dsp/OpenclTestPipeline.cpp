@@ -4,8 +4,8 @@
 
 #include <voyx/Source.h>
 
-OpenclTestPipeline::OpenclTestPipeline(const voyx_t samplerate, const size_t framesize, const size_t dftsize, std::shared_ptr<Source<voyx_t>> source, std::shared_ptr<Sink<voyx_t>> sink) :
-  SyncPipeline<voyx_t>(source, sink),
+OpenclTestPipeline::OpenclTestPipeline(const double samplerate, const size_t framesize, const size_t dftsize, std::shared_ptr<Source<sample_t>> source, std::shared_ptr<Sink<sample_t>> sink) :
+  SyncPipeline<sample_t>(source, sink),
   samplerate(samplerate),
   framesize(framesize),
   dftsize(dftsize)
@@ -74,13 +74,13 @@ OpenclTestPipeline::OpenclTestPipeline(const voyx_t samplerate, const size_t fra
 
 #define CLBUFFER(vector, type) cl::Buffer(context, CL_MEM_USE_HOST_PTR, vector.size() * sizeof(type), (void*)vector.data());
 
-void OpenclTestPipeline::operator()(const size_t index, const voyx::vector<voyx_t> input, voyx::vector<voyx_t> output)
+void OpenclTestPipeline::operator()(const size_t index, const voyx::vector<sample_t> input, voyx::vector<sample_t> output)
 {
   cl::Event event;
   {
-    cl::Buffer samples = CLBUFFER(input, voyx_t);
-    cl::Buffer inputs = CLBUFFER(buffer.inputs, voyx_t);
-    cl::Buffer outputs = CLBUFFER(buffer.outputs, std::complex<voyx_t>);
+    cl::Buffer samples = CLBUFFER(input, sample_t);
+    cl::Buffer inputs = CLBUFFER(buffer.inputs, sample_t);
+    cl::Buffer outputs = CLBUFFER(buffer.outputs, phasor_t);
 
     sdft1.setArg<cl::Buffer>(0, samples);
     sdft1.setArg<cl::Buffer>(1, inputs);
@@ -93,29 +93,29 @@ void OpenclTestPipeline::operator()(const size_t index, const voyx::vector<voyx_
     queue.enqueueNDRangeKernel(sdft1, cl::NullRange, cl::NDRange(dftsize), cl::NullRange);
   }
   {
-    cl::Buffer samples = CLBUFFER(input, voyx_t);
-    cl::Buffer inputs = CLBUFFER(buffer.inputs, voyx_t);
-    cl::Buffer outputs = CLBUFFER(buffer.outputs, std::complex<voyx_t>);
-    cl::Buffer dfts = CLBUFFER(buffer.dfts, std::complex<voyx_t>);
+    cl::Buffer samples = CLBUFFER(input, sample_t);
+    cl::Buffer inputs = CLBUFFER(buffer.inputs, sample_t);
+    cl::Buffer outputs = CLBUFFER(buffer.outputs, phasor_t);
+    cl::Buffer dfts = CLBUFFER(buffer.dfts, phasor_t);
 
     sdft2.setArg<cl::Buffer>(0, outputs);
     sdft2.setArg<cl::Buffer>(1, dfts);
 
     sdft2.setArg<int>(2, dftsize);
-    sdft2.setArg<voyx_t>(3, voyx_t(1) / dftsize);
+    sdft2.setArg<sample_t>(3, sample_t(1) / dftsize);
 
     queue.enqueueNDRangeKernel(sdft2, cl::NullRange, cl::NDRange(dftsize, framesize), cl::NullRange, nullptr, &event);
   }
 
   event.wait();
 
-  voyx::matrix<std::complex<voyx_t>> dfts(buffer.dfts, dftsize);
+  voyx::matrix<phasor_t> dfts(buffer.dfts, dftsize);
 
   for (size_t i = 0; i < framesize; ++i)
   {
-    const voyx::vector<std::complex<voyx_t>> dft = dfts[i];
+    const voyx::vector<phasor_t> dft = dfts[i];
 
-    voyx_t sample = 0;
+    sample_t sample = 0;
 
     for (size_t j = 0; j < dftsize; ++j)
     {

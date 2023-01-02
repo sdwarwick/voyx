@@ -7,20 +7,20 @@
 
 #include <CL/opencl.hpp>
 
-class OpenclTestPipeline : public SyncPipeline<voyx_t>
+class OpenclTestPipeline : public SyncPipeline<sample_t>
 {
 
 public:
 
-  OpenclTestPipeline(const voyx_t samplerate, const size_t framesize, const size_t dftsize, std::shared_ptr<Source<voyx_t>> source, std::shared_ptr<Sink<voyx_t>> sink);
+  OpenclTestPipeline(const double samplerate, const size_t framesize, const size_t dftsize, std::shared_ptr<Source<sample_t>> source, std::shared_ptr<Sink<sample_t>> sink);
 
 protected:
 
-  const voyx_t samplerate;
+  const double samplerate;
   const size_t framesize;
   const size_t dftsize;
 
-  void operator()(const size_t index, const voyx::vector<voyx_t> input, voyx::vector<voyx_t> output) override;
+  void operator()(const size_t index, const voyx::vector<sample_t> input, voyx::vector<sample_t> output) override;
 
 private:
 
@@ -34,9 +34,9 @@ private:
 
   struct
   {
-    std::vector<voyx_t> inputs;
-    std::vector<std::complex<voyx_t>> outputs;
-    std::vector<std::complex<voyx_t>> dfts;
+    std::vector<sample_t> inputs;
+    std::vector<phasor_t> outputs;
+    std::vector<phasor_t> dfts;
     size_t cursor;
   }
   buffer;
@@ -44,11 +44,11 @@ private:
 const std::string kernels =
   R"(
 
-    typedef float voyx_t;
+    typedef float sample_t;
 
-    kernel void sdft1(global const voyx_t* samples,
-                      global const voyx_t* samplebuffer,
-                      global voyx_t* dftbuffer,
+    kernel void sdft1(global const sample_t* samples,
+                      global const sample_t* samplebuffer,
+                      global sample_t* dftbuffer,
                       const int framesize,
                       const int dftsize,
                       const int cursor)
@@ -57,8 +57,8 @@ const std::string kernels =
 
       const int dftstride = dftsize + 2;
 
-      const voyx_t pi = voyx_t(2) * dftbin / dftsize;
-      const voyx_t twiddle[] = { cospi(pi), sinpi(pi) };
+      const sample_t pi = sample_t(2) * dftbin / dftsize;
+      const sample_t twiddle[] = { cospi(pi), sinpi(pi) };
 
       for (int sample = 0; sample < framesize; ++sample)
       {
@@ -70,13 +70,13 @@ const std::string kernels =
 
         const int oldsample = (cursor + sample) % dftsize;
 
-        const voyx_t delta = samples[sample] - samplebuffer[oldsample];
+        const sample_t delta = samples[sample] - samplebuffer[oldsample];
 
         dftbuffer[i + 0] += delta;
         dftbuffer[i + 1] += delta;
 
-        const voyx_t real = dftbuffer[i + 0] * twiddle[0] - dftbuffer[i + 1] * twiddle[1];
-        const voyx_t imag = dftbuffer[i + 0] * twiddle[1] + dftbuffer[i + 1] * twiddle[0];
+        const sample_t real = dftbuffer[i + 0] * twiddle[0] - dftbuffer[i + 1] * twiddle[1];
+        const sample_t imag = dftbuffer[i + 0] * twiddle[1] + dftbuffer[i + 1] * twiddle[0];
 
         dftbuffer[i + 0] = real;
         dftbuffer[i + 1] = imag;
@@ -93,10 +93,10 @@ const std::string kernels =
       }
     }
 
-    kernel void sdft2(global const voyx_t* dftbuffer,
-                      global voyx_t* dfts,
+    kernel void sdft2(global const sample_t* dftbuffer,
+                      global sample_t* dfts,
                       const int dftsize,
-                      const voyx_t scale)
+                      const sample_t scale)
     {
       const int dftbin = get_global_id(0);
       const int sample = get_global_id(1);
@@ -110,11 +110,11 @@ const std::string kernels =
 
       for (int j = 0; j < 2; ++j)
       {
-        const voyx_t left = dftbuffer[l + j];
-        const voyx_t middle = dftbuffer[m + j];
-        const voyx_t right = dftbuffer[r + j];
+        const sample_t left = dftbuffer[l + j];
+        const sample_t middle = dftbuffer[m + j];
+        const sample_t right = dftbuffer[r + j];
 
-        dfts[i + j] = voyx_t(0.25) * ((middle + middle) - (left + right)) * scale;
+        dfts[i + j] = sample_t(0.25) * ((middle + middle) - (left + right)) * scale;
       }
     }
 

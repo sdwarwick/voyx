@@ -2,7 +2,7 @@
 
 #include <voyx/Source.h>
 
-AudioSource::AudioSource(const std::string& name, voyx_t samplerate, size_t framesize, size_t buffersize) :
+AudioSource::AudioSource(const std::string& name, double samplerate, size_t framesize, size_t buffersize) :
   Source(samplerate, framesize, buffersize),
   audio_device_name(name),
   audio_frame_buffer(
@@ -87,7 +87,7 @@ void AudioSource::open()
   stream_parameters.nChannels = 1;
   stream_parameters.firstChannel = 0;
 
-  const RtAudioFormat stream_format = (typeid(voyx_t) == typeid(float)) ? RTAUDIO_FLOAT32 : RTAUDIO_FLOAT64;
+  const RtAudioFormat stream_format = (typeid(sample_t) == typeid(float)) ? RTAUDIO_FLOAT32 : RTAUDIO_FLOAT64;
   uint32_t stream_samplerate = device.preferredSampleRate;
   uint32_t stream_framesize = static_cast<uint32_t>(framesize());
 
@@ -172,7 +172,7 @@ void AudioSource::stop()
   audio.stopStream();
 }
 
-bool AudioSource::read(const size_t index, std::function<void(const voyx::vector<voyx_t> frame)> callback)
+bool AudioSource::read(const size_t index, std::function<void(const voyx::vector<sample_t> frame)> callback)
 {
   const bool ok = audio_frame_buffer.read(timeout(), [&](InputFrame& input)
   {
@@ -200,8 +200,8 @@ int AudioSource::callback(void* output_frame_data, void* input_frame_data, uint3
                         framesize, input.frame.size(), audio_samplerate_converter.quotient());
     }
 
-    voyx::vector<voyx_t> src = { static_cast<voyx_t*>(input_frame_data), framesize };
-    voyx::vector<voyx_t> dst = { input.frame.data(), input.frame.size() };
+    voyx::vector<sample_t> src = { static_cast<sample_t*>(input_frame_data), framesize };
+    voyx::vector<sample_t> dst = { input.frame.data(), input.frame.size() };
 
     audio_samplerate_converter(src, dst);
   });
