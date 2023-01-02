@@ -17,7 +17,7 @@ target_include_directories(voyx
 
 target_link_libraries(voyx
   PRIVATE cxxopts
-          dr_libs
+          dr
           easyloggingpp
           fmt
           metal

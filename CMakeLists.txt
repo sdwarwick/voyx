@@ -15,7 +15,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/lib/opencl.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/lib/qt.cmake")
 
 include("${CMAKE_CURRENT_LIST_DIR}/lib/cxxopts.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/lib/dr_libs.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/lib/dr.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/lib/easyloggingpp.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/lib/fmt.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/lib/mlinterp.cmake")
