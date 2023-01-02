@@ -30,9 +30,9 @@ protected:
   {
     voyx::matrix<phasor_t> dfts(data.dfts, dftsize);
 
-    sdft.sdft(input, dfts);
+    sdft.sdft(dfts.size(), input.data(), dfts.data());
     (*this)(index, dfts);
-    sdft.isdft(dfts, output);
+    sdft.isdft(dfts.size(), dfts.data(), output.data());
   }
 
   virtual void operator()(const size_t index, voyx::matrix<phasor_t> dfts) = 0;
