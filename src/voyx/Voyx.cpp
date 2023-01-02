@@ -136,6 +136,10 @@ int main(int argc, char** argv)
   {
     source = std::make_shared<NoiseSource>(0.5, samplerate, framesize, buffersize);
   }
+  else if ($$::imatch(input, "null"))
+  {
+    source = std::make_shared<NullSource>(samplerate, framesize, buffersize);
+  }
   else if ($$::imatch(input, "sine"))
   {
     source = std::make_shared<SineSource>(0.5, concertpitch, samplerate, framesize, buffersize);
@@ -154,6 +158,10 @@ int main(int argc, char** argv)
   }
 
   if (output.empty())
+  {
+    sink = std::make_shared<NullSink>(samplerate, framesize, buffersize);
+  }
+  else if ($$::imatch(output, "null"))
   {
     sink = std::make_shared<NullSink>(samplerate, framesize, buffersize);
   }
@@ -181,8 +189,8 @@ int main(int argc, char** argv)
   // auto pipe = std::make_shared<MetalTestPipeline>(samplerate, framesize, dftsize, source, sink);
   // auto pipe = std::make_shared<OpenclTestPipeline>(samplerate, framesize, dftsize, source, sink);
   // auto pipe = std::make_shared<RobotPipeline>(samplerate, framesize, dftsize, source, sink, observer, plot);
-  // auto pipe = std::make_shared<SdftTestPipeline>(samplerate, framesize, dftsize, source, sink, observer, plot);
-  auto pipe = std::make_shared<SlidingVoiceSynthPipeline>(samplerate, framesize, dftsize, source, sink, observer, plot);
+  auto pipe = std::make_shared<SdftTestPipeline>(samplerate, framesize, dftsize, source, sink, observer, plot);
+  // auto pipe = std::make_shared<SlidingVoiceSynthPipeline>(samplerate, framesize, dftsize, source, sink, observer, plot);
   // auto pipe = std::make_shared<StftTestPipeline>(samplerate, framesize, hopsize, source, sink, observer, plot);
   // auto pipe = std::make_shared<VoiceSynthPipeline>(samplerate, framesize, hopsize, source, sink, observer, plot);
 
