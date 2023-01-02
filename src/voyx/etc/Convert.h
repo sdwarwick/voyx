@@ -5,6 +5,7 @@
 #include <voyx/etc/Convert.Complex.h>
 #include <voyx/etc/Convert.Array.h>
 #include <voyx/etc/Convert.Interpolation.h>
+#include <voyx/etc/Convert.Window.h>
 
 #include <voyx/etc/Convert.DFT.h>
 #include <voyx/etc/Convert.FFT.h>

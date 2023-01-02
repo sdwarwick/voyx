@@ -2,7 +2,6 @@
 
 #include <voyx/Header.h>
 #include <voyx/alg/FFT.h>
-#include <voyx/alg/Window.h>
 
 namespace $$
 {
@@ -29,7 +28,7 @@ namespace $$
   template<typename T>
   std::vector<std::complex<T>> fft(const voyx::vector<T> samples)
   {
-    const std::vector<T> window = Window<T>(samples.size());
+    const std::vector<T> window = $$::window<T>(samples.size());
 
     return $$::fft(samples, voyx::vector(window));
   }

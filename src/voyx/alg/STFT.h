@@ -2,7 +2,7 @@
 
 #include <voyx/Header.h>
 #include <voyx/alg/FFT.h>
-#include <voyx/alg/Window.h>
+#include <voyx/etc/Convert.Window.h>
 
 /**
  * Short-Time Fourier Transform implementation.
@@ -18,7 +18,7 @@ public:
     hopsize(hopsize),
     fft(framesize)
   {
-    const std::vector<T> window = Window<T>(framesize);
+    const std::vector<T> window = $$::window<T>(framesize);
 
     windows.analysis = window;
     windows.synthesis = window;
