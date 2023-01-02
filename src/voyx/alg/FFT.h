@@ -1,7 +1,6 @@
 #pragma once
 
 #include <voyx/Header.h>
-#include <voyx/alg/Window.h>
 
 #include <pocketfft_hdronly.h>
 
@@ -98,44 +97,6 @@ public:
       dfts.data(),
       samples.data(),
       T(1));
-  }
-
-  std::vector<std::complex<T>> fft(const voyx::vector<T> samples) const
-  {
-    voyxassert(samples.size() == framesize());
-
-    const std::vector<T> window = Window<T>(framesize());
-
-    return fft(samples, window);
-  }
-
-  std::vector<std::complex<T>> fft(const voyx::vector<T> samples, const voyx::vector<T> window) const
-  {
-    voyxassert(samples.size() == framesize());
-    voyxassert(window.size() == framesize());
-
-    std::vector<T> product(framesize());
-    std::vector<std::complex<T>> dft(dftsize());
-
-    for (size_t i = 0; i < framesize(); ++i)
-    {
-      product[i] = samples[i] * window[i];
-    }
-
-    fft(product, dft);
-
-    return dft;
-  }
-
-  std::vector<T> ifft(const voyx::vector<std::complex<T>> dft) const
-  {
-    voyxassert(dft.size() == dftsize());
-
-    std::vector<T> samples(framesize());
-
-    ifft(dft, samples);
-
-    return samples;
   }
 
 private:

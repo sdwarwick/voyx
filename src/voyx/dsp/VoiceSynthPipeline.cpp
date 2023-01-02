@@ -28,9 +28,7 @@ void VoiceSynthPipeline::operator()(const size_t index,
 {
   if (plot != nullptr)
   {
-    FFT<sample_t> fft(framesize * 2);
-
-    std::vector<std::complex<sample_t>> dft = fft.fft(signal);
+    std::vector<std::complex<sample_t>> dft = $$::fft(signal);
     std::vector<double> abs(dft.size());
 
     for (size_t i = 0; i < dft.size(); ++i)

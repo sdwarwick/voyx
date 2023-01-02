@@ -2,6 +2,7 @@
 
 #include <voyx/Header.h>
 #include <voyx/alg/FFT.h>
+#include <voyx/alg/Window.h>
 
 /**
  * Short-Time Fourier Transform implementation.
