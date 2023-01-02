@@ -27,8 +27,7 @@ target_link_libraries(voyx
           readerwriterqueue
           rtaudio
           rtmidi
-          sdft
-          threadpool)
+          sdft)
 
 target_compile_features(voyx
   PRIVATE cxx_std_20)

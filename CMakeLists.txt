@@ -22,6 +22,5 @@ include("${CMAKE_CURRENT_LIST_DIR}/lib/readerwriterqueue.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/lib/rtaudio.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/lib/rtmidi.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/lib/sdft.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/lib/threadpool.cmake")
 
 include("${CMAKE_CURRENT_LIST_DIR}/src/voyx/voyx.cmake")
