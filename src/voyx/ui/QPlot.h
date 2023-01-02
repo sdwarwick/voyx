@@ -44,8 +44,8 @@ protected:
 
   void addPlot(const size_t row, const size_t col, const size_t graphs);
   QCustomPlot* getPlot(const size_t row, const size_t col) const;
-  QColor getLineColor(const size_t index) const;
-  int getLineWidth(const size_t index) const;
+  QColor getLineColor(const ptrdiff_t index) const;
+  int getLineWidth(const ptrdiff_t index) const;
 
 private:
 

@@ -212,13 +212,14 @@ void QPlot::addPlot(const size_t row, const size_t col, const size_t graphs)
 
   for (size_t i = 0; i < graphs; ++i)
   {
-    plot->addGraph();
-
     QPen pen;
+
+    pen.setStyle(Qt::SolidLine);
 
     pen.setColor(getLineColor(i));
     pen.setWidth(getLineWidth(i));
 
+    plot->addGraph();
     plot->graph(i)->setPen(pen);
   }
 
@@ -236,9 +237,10 @@ void QPlot::addPlot(const size_t row, const size_t col, const size_t graphs)
   {
     QPen pen;
 
-    pen.setColor(getLineColor(0));
-    pen.setWidth(getLineWidth(0));
     pen.setStyle(Qt::DashLine);
+
+    pen.setColor(getLineColor(-1));
+    pen.setWidth(getLineWidth(-1));
 
     xline->setPen(pen);
     yline->setPen(pen);
@@ -257,14 +259,19 @@ QCustomPlot* QPlot::getPlot(const size_t row, const size_t col) const
     layout->itemAtPosition(row, col)->widget());
 }
 
-QColor QPlot::getLineColor(const size_t index) const
+QColor QPlot::getLineColor(const ptrdiff_t index) const
 {
+  if (index < 0)
+  {
+    return Qt::gray;
+  }
+
   const auto& color = colors[index % 10];
 
   return QColor(color[0], color[1], color[2]);
 }
 
-int QPlot::getLineWidth(const size_t index) const
+int QPlot::getLineWidth(const ptrdiff_t index) const
 {
   return 2;
 }
