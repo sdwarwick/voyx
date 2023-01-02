@@ -28,17 +28,18 @@ public:
   void show() override;
   void show(const size_t width, const size_t height);
 
-  void xlim(const double min, const double max) override;
-  void ylim(const double min, const double max) override;
-
-  void xrange(const double max) override;
-  void xrange(const double min, const double max) override;
+  void plot(const std::span<const float> y) override;
+  void plot(const std::span<const double> y) override;
 
   void xline(const std::optional<double> x) override;
   void yline(const std::optional<double> y) override;
 
-  void plot(const std::span<const float> y) override;
-  void plot(const std::span<const double> y) override;
+  void xlim(const double min, const double max) override;
+  void ylim(const double min, const double max) override;
+
+  void xmap(const double max) override;
+  void xmap(const double min, const double max) override;
+  void xmap(const std::function<double(double i, double n)> transform) override;
 
 protected:
 
@@ -61,12 +62,12 @@ private:
 
   struct
   {
-    bool xauto = true;
-    bool yauto = true;
-    std::optional<std::pair<double, double>> xrange;
     std::vector<double> ydata;
     std::optional<double> xline;
     std::optional<double> yline;
+    std::optional<std::pair<double, double>> xlim;
+    std::optional<std::pair<double, double>> ylim;
+    std::optional<std::function<double(double, double)>> xmap;
   }
   data;
 

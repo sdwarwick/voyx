@@ -16,7 +16,7 @@ VoiceSynthPipeline::VoiceSynthPipeline(const double samplerate, const size_t fra
 
   if (plot != nullptr)
   {
-    plot->xrange(samplerate / 2);
+    plot->xmap(samplerate / 2);
     plot->xlim(0, 5e3);
     plot->ylim(-120, 0);
   }

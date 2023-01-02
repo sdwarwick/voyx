@@ -128,38 +128,26 @@ void QPlot::show(const size_t width, const size_t height)
   application->exec();
 }
 
-void QPlot::xlim(const double min, const double max)
+void QPlot::plot(const std::span<const float> y)
 {
-  std::lock_guard lock(mutex);
-  data.xauto = false;
-
-  for (auto plot : plots)
+  if (pause)
   {
-    plot->xAxis->setRange(min, max);
+    return;
   }
+
+  std::lock_guard lock(mutex);
+  data.ydata = std::vector<double>(y.begin(), y.end());
 }
 
-void QPlot::ylim(const double min, const double max)
+void QPlot::plot(const std::span<const double> y)
 {
-  std::lock_guard lock(mutex);
-  data.yauto = false;
-
-  for (auto plot : plots)
+  if (pause)
   {
-    plot->yAxis->setRange(min, max);
+    return;
   }
-}
 
-void QPlot::xrange(const double max)
-{
   std::lock_guard lock(mutex);
-  data.xrange = std::pair<double, double>(0, max);
-}
-
-void QPlot::xrange(const double min, const double max)
-{
-  std::lock_guard lock(mutex);
-  data.xrange = std::pair<double, double>(min, max);
+  data.ydata = std::vector<double>(y.begin(), y.end());
 }
 
 void QPlot::xline(const std::optional<double> x)
@@ -184,26 +172,34 @@ void QPlot::yline(const std::optional<double> y)
   data.yline = y;
 }
 
-void QPlot::plot(const std::span<const float> y)
+void QPlot::xlim(const double min, const double max)
 {
-  if (pause)
-  {
-    return;
-  }
-
   std::lock_guard lock(mutex);
-  data.ydata = std::vector<double>(y.begin(), y.end());
+  data.xlim = std::pair<double, double>(min, max);
 }
 
-void QPlot::plot(const std::span<const double> y)
+void QPlot::ylim(const double min, const double max)
 {
-  if (pause)
-  {
-    return;
-  }
-
   std::lock_guard lock(mutex);
-  data.ydata = std::vector<double>(y.begin(), y.end());
+  data.ylim = std::pair<double, double>(min, max);
+}
+
+void QPlot::xmap(const double max)
+{
+  std::lock_guard lock(mutex);
+  data.xmap = [max](double i, double n) { return (i / n) * max; };
+}
+
+void QPlot::xmap(const double min, const double max)
+{
+  std::lock_guard lock(mutex);
+  data.xmap = [min, max](double i, double n) { return (i / n) * (max - min) + min; };
+}
+
+void QPlot::xmap(const std::function<double(double i, double n)> transform)
+{
+  std::lock_guard lock(mutex);
+  data.xmap = transform;
 }
 
 void QPlot::addPlot(const size_t row, const size_t col, const size_t graphs)
@@ -295,34 +291,32 @@ void QPlot::loop()
 
     std::this_thread::sleep_for(delay);
 
-    bool xauto, yauto;
-    std::optional<std::pair<double, double>> xrange;
     std::vector<double> ydata;
     std::optional<double> xline;
     std::optional<double> yline;
+    std::optional<std::pair<double, double>> xlim;
+    std::optional<std::pair<double, double>> ylim;
+    std::optional<std::function<double(double, size_t)>> xmap;
     {
       std::lock_guard lock(mutex);
-      xauto = data.xauto;
-      yauto = data.yauto;
-      xrange = data.xrange;
       ydata = data.ydata;
       xline = data.xline;
       yline = data.yline;
+      xlim = data.xlim;
+      ylim = data.ylim;
+      xmap = data.xmap;
     }
 
-    std::vector<double> xdata;
+    std::vector<double> xdata(ydata.size());
     {
-      xdata.resize(ydata.size());
-
       std::iota(xdata.begin(), xdata.end(), 0.0);
 
-      if (xrange.has_value())
+      if (xmap.has_value())
       {
-        const double foo = (xrange.value().second - xrange.value().first) / xdata.size();
-        const double bar = xrange.value().first;
+        const double n = xdata.size();
 
         std::transform(xdata.begin(), xdata.end(), xdata.begin(),
-          [foo, bar](double value) { return value * foo + bar; });
+          [&](double i) { return xmap.value()(i, n); });
       }
     }
 
@@ -367,38 +361,36 @@ void QPlot::loop()
         ylines.at(plot)->setVisible(false);
       }
 
-      // auto range
+      // x,y lim
 
-      if (xauto && !xdata.empty())
+      if (xlim.has_value())
+      {
+        const double xmin = xlim.value().first;
+        const double xmax = xlim.value().second;
+
+        plot->xAxis->setRange(xmin, xmax);
+      }
+      else if (!xdata.empty())
       {
         const double xmin = *std::min_element(xdata.begin(), xdata.end());
         const double xmax = *std::max_element(xdata.begin(), xdata.end());
 
-        // sync again
-        {
-          std::lock_guard lock(mutex);
-
-          if (data.xauto)
-          {
-            plot->xAxis->setRange(xmin, xmax);
-          }
-        }
+        plot->xAxis->setRange(xmin, xmax);
       }
 
-      if (yauto && !ydata.empty())
+      if (ylim.has_value())
+      {
+        const double ymin = ylim.value().first;
+        const double ymax = ylim.value().second;
+
+        plot->yAxis->setRange(ymin, ymax);
+      }
+      else if (!ydata.empty())
       {
         const double ymin = *std::min_element(ydata.begin(), ydata.end());
         const double ymax = *std::max_element(ydata.begin(), ydata.end());
 
-        // sync again
-        {
-          std::lock_guard lock(mutex);
-
-          if (data.yauto)
-          {
-            plot->yAxis->setRange(ymin, ymax);
-          }
-        }
+        plot->yAxis->setRange(ymin, ymax);
       }
 
       // replot

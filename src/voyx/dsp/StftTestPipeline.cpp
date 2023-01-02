@@ -12,7 +12,7 @@ StftTestPipeline::StftTestPipeline(const double samplerate, const size_t framesi
 {
   if (plot != nullptr)
   {
-    plot->xrange(samplerate / 2);
+    plot->xmap(samplerate / 2);
     plot->xlim(0, 2e3);
     plot->ylim(-120, 0);
   }

@@ -25,7 +25,7 @@ InverseSynthPipeline::InverseSynthPipeline(const double samplerate, const size_t
 
   if (plot != nullptr)
   {
-    plot->xrange(samplerate / 2);
+    plot->xmap(samplerate / 2);
     plot->xlim(0, 2.5e3);
     plot->ylim(0, 1);
   }
