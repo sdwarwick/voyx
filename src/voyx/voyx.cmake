@@ -21,7 +21,6 @@ target_link_libraries(voyx
           easyloggingpp
           fmt
           mlinterp
-          opencl
           openmp
           pocketfft
           qcustomplot
@@ -58,12 +57,5 @@ if (UI)
 
   target_compile_definitions(voyx
     PRIVATE VOYXUI)
-
-endif()
-
-if (OPENCL)
-
-  target_compile_definitions(voyx
-    PRIVATE VOYXOPENCL)
 
 endif()
