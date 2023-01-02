@@ -4,8 +4,8 @@ if (UI)
 
   CPMAddPackage(
     NAME qcustomplot
-    VERSION 2.1.0
-    URL https://www.qcustomplot.com/release/2.1.0fixed/QCustomPlot-source.tar.gz
+    VERSION 2.1.1
+    URL https://www.qcustomplot.com/release/2.1.1/QCustomPlot-source.tar.gz
     DOWNLOAD_ONLY YES)
 
   if(qcustomplot_ADDED)
