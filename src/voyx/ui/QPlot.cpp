@@ -196,7 +196,13 @@ void QPlot::xmap(const double min, const double max)
   data.xmap = [min, max](double i, double n) { return (i / n) * (max - min) + min; };
 }
 
-void QPlot::xmap(const std::function<double(double i, double n)> transform)
+void QPlot::xmap(const std::function<double(size_t i)> transform)
+{
+  std::lock_guard lock(mutex);
+  data.xmap = [transform](size_t i, size_t n) { return transform(i); };
+}
+
+void QPlot::xmap(const std::function<double(size_t i, size_t n)> transform)
 {
   std::lock_guard lock(mutex);
   data.xmap = transform;
@@ -309,14 +315,18 @@ void QPlot::loop()
 
     std::vector<double> xdata(ydata.size());
     {
-      std::iota(xdata.begin(), xdata.end(), 0.0);
-
       if (xmap.has_value())
       {
-        const double n = xdata.size();
+        const size_t n = xdata.size();
 
-        std::transform(xdata.begin(), xdata.end(), xdata.begin(),
-          [&](double i) { return xmap.value()(i, n); });
+        for (size_t i = 0; i < n; ++i)
+        {
+          xdata[i] = xmap.value()(i, n);
+        }
+      }
+      else
+      {
+        std::iota(xdata.begin(), xdata.end(), 0.0);
       }
     }
 

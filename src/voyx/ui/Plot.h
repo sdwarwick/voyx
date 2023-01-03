@@ -22,6 +22,7 @@ public:
 
   virtual void xmap(const double max) = 0;
   virtual void xmap(const double min, const double max) = 0;
-  virtual void xmap(const std::function<double(double i, double n)> transform) = 0;
+  virtual void xmap(const std::function<double(size_t i)> transform) = 0;
+  virtual void xmap(const std::function<double(size_t i, size_t n)> transform) = 0;
 
 };

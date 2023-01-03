@@ -39,7 +39,8 @@ public:
 
   void xmap(const double max) override;
   void xmap(const double min, const double max) override;
-  void xmap(const std::function<double(double i, double n)> transform) override;
+  void xmap(const std::function<double(size_t i)> transform) override;
+  void xmap(const std::function<double(size_t i, size_t n)> transform) override;
 
 protected:
 
@@ -67,7 +68,7 @@ private:
     std::optional<double> yline;
     std::optional<std::pair<double, double>> xlim;
     std::optional<std::pair<double, double>> ylim;
-    std::optional<std::function<double(double, double)>> xmap;
+    std::optional<std::function<double(size_t, size_t)>> xmap;
   }
   data;
 
