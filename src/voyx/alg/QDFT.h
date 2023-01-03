@@ -20,65 +20,62 @@ class QDFT
 
 public:
 
-  QDFT(const double samplerate, const double fmin, const double fmax, const double fnum = 24, const double latency = 0) :
-    samplerate(samplerate),
-    fmin(fmin),
-    fmax(fmax),
-    fnum(fnum),
-    dftlatency(latency),
-    dftquality(std::pow(std::pow(2.0, 1.0 / fnum) - 1.0, -1.0)),
-    dftsize(std::ceil(fnum * std::log2(fmax / fmin)))
+  QDFT(const double samplerate, std::pair<double, double> roi, const double resolution = 24, const double latency = 0)
   {
     const F pi = F(2) * std::acos(F(-1));
 
-    cache.frequencies.resize(dftsize);
-    cache.periods.resize(dftsize);
-    cache.offsets.resize(dftsize);
-    cache.weights.resize(dftsize);
-    cache.twiddles.resize(dftsize + 1);
+    config.samplerate = samplerate;
+    config.roi = roi;
+    config.resolution = resolution;
+    config.latency = latency;
+    config.quality = std::pow(std::pow(2.0, 1.0 / resolution) - 1.0, -1.0);
+    config.size = std::ceil(resolution * std::log2(roi.second / roi.first));
 
-    for (size_t i = 0; i < dftsize; ++i)
+    config.frequencies.resize(config.size);
+    data.resize(config.size + 1);
+
+    for (size_t i = 0; i < config.size; ++i)
     {
-      const double frequency = fmin * std::pow(2.0, i / fnum);
-      const double period = std::ceil(dftquality * samplerate / frequency);
+      const double frequency = config.roi.first * std::pow(2.0, i / config.resolution);
+      const double period = std::ceil(config.quality * config.samplerate / frequency);
       const double weight = 1.0 / period;
 
-      cache.frequencies[i] = frequency;
-      cache.periods[i] = static_cast<size_t>(period);
-      cache.weights[i] = weight;
+      config.frequencies[i] = frequency;
+      data[i].period = static_cast<size_t>(period);
+      data[i].weight = weight;
 
-      const double offset = (cache.periods.front() - period)
-        * std::clamp(dftlatency * 0.5 + 0.5, 0.0, 1.0);
+      const double offset = (data.front().period - period)
+        * std::clamp(config.latency * 0.5 + 0.5, 0.0, 1.0);
 
-      cache.offsets[i] = static_cast<size_t>(offset);
+      data[i].offset = static_cast<size_t>(offset);
 
-      cache.twiddles[i] = std::polar(F(1), +pi * dftquality / period);
+      data[i].twiddle = std::polar(F(1), +pi * config.quality / period);
     }
 
-    cache.twiddles.back() = std::polar(F(1), -pi * dftquality);
+    data.back().twiddle = std::polar(F(1), -pi * config.quality);
 
-    buffer.input.resize(cache.periods.front() + 1);
-    buffer.output.resize(dftsize);
+    buffer.input.resize(data.front().period + 1);
+    buffer.output.resize(config.size);
   }
 
   size_t size() const
   {
-    return dftsize;
+    return config.size;
   }
 
   double quality() const
   {
-    return dftquality;
+    return config.quality;
   }
 
   double latency() const
   {
-    return dftlatency;
+    return config.latency;
   }
 
   const std::vector<double>& frequencies() const
   {
-    return cache.frequencies;
+    return config.frequencies;
   }
 
   void qdft(const T sample, voyx::vector<std::complex<F>> dft)
@@ -87,16 +84,16 @@ public:
 
     buffer.input.back() = sample;
 
-    const std::complex<F> twiddle = cache.twiddles.back();
+    const std::complex<F> twiddle = data.back().twiddle;
 
     for (size_t i = 0; i < dft.size(); ++i)
     {
-      const F left = buffer.input[cache.offsets[i] + cache.periods[i]];
-      const F right = buffer.input[cache.offsets[i]];
+      const F left = buffer.input[data[i].offset + data[i].period];
+      const F right = buffer.input[data[i].offset];
 
       const std::complex<F> delta = twiddle * left - right;
 
-      dft[i] = buffer.output[i] = cache.twiddles[i] * (buffer.output[i] + delta * cache.weights[i]);
+      dft[i] = buffer.output[i] = data[i].twiddle * (buffer.output[i] + delta * data[i].weight);
     }
   }
 
@@ -114,7 +111,7 @@ public:
 
     for (size_t i = 0; i < dft.size(); ++i)
     {
-      sample += (dft[i] * cache.twiddles[i]).real();
+      sample += (dft[i] * data[i].twiddle).real();
     }
 
     return static_cast<T>(sample);
@@ -130,29 +127,35 @@ public:
 
 private:
 
-  const double samplerate;
-  const double fmin;
-  const double fmax;
-  const double fnum;
-  const double dftlatency;
-  const double dftquality;
-  const size_t dftsize;
-
-  struct
+  struct qdft_config_t
   {
+    double samplerate;
+    std::pair<double, double> roi;
+    double resolution;
+    double latency;
+    double quality;
+    size_t size;
     std::vector<double> frequencies;
-    std::vector<size_t> periods;
-    std::vector<size_t> offsets;
-    std::vector<double> weights;
-    std::vector<std::complex<F>> twiddles;
-  }
-  cache;
+  };
 
-  struct
+  qdft_config_t config;
+
+  struct qdft_data_t
+  {
+    size_t period;
+    size_t offset;
+    double weight;
+    std::complex<F> twiddle;
+  };
+
+  std::vector<qdft_data_t> data;
+
+  struct qdft_buffer_t
   {
     std::vector<T> input;
     std::vector<std::complex<F>> output;
-  }
-  buffer;
+  };
+
+  qdft_buffer_t buffer;
 
 };
