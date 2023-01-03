@@ -208,6 +208,18 @@ void QPlot::xmap(const std::function<double(size_t i, size_t n)> transform)
   data.xmap = transform;
 }
 
+void QPlot::xlog()
+{
+  std::lock_guard lock(mutex);
+  data.xlog = !data.xlog;
+}
+
+void QPlot::ylog()
+{
+  std::lock_guard lock(mutex);
+  data.ylog = !data.ylog;
+}
+
 void QPlot::addPlot(const size_t row, const size_t col, const size_t graphs)
 {
   auto plot = std::make_shared<QCustomTouchPlot>();
@@ -303,6 +315,8 @@ void QPlot::loop()
     std::optional<std::pair<double, double>> xlim;
     std::optional<std::pair<double, double>> ylim;
     std::optional<std::function<double(double, size_t)>> xmap;
+    bool xlog;
+    bool ylog;
     {
       std::lock_guard lock(mutex);
       ydata = data.ydata;
@@ -311,6 +325,8 @@ void QPlot::loop()
       xlim = data.xlim;
       ylim = data.ylim;
       xmap = data.xmap;
+      xlog = data.xlog;
+      ylog = data.ylog;
     }
 
     std::vector<double> xdata(ydata.size());
@@ -401,6 +417,26 @@ void QPlot::loop()
         const double ymax = *std::max_element(ydata.begin(), ydata.end());
 
         plot->yAxis->setRange(ymin, ymax);
+      }
+
+      // x,y log or lin
+
+      if (xlog)
+      {
+        plot->xAxis->setScaleType(QCPAxis::stLogarithmic);
+      }
+      else
+      {
+        plot->xAxis->setScaleType(QCPAxis::stLinear);
+      }
+
+      if (ylog)
+      {
+        plot->yAxis->setScaleType(QCPAxis::stLogarithmic);
+      }
+      else
+      {
+        plot->yAxis->setScaleType(QCPAxis::stLinear);
       }
 
       // replot

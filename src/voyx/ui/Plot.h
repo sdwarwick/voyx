@@ -25,4 +25,7 @@ public:
   virtual void xmap(const std::function<double(size_t i)> transform) = 0;
   virtual void xmap(const std::function<double(size_t i, size_t n)> transform) = 0;
 
+  virtual void xlog() = 0;
+  virtual void ylog() = 0;
+
 };

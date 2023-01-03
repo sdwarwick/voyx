@@ -42,6 +42,9 @@ public:
   void xmap(const std::function<double(size_t i)> transform) override;
   void xmap(const std::function<double(size_t i, size_t n)> transform) override;
 
+  void xlog() override;
+  void ylog() override;
+
 protected:
 
   void addPlot(const size_t row, const size_t col, const size_t graphs);
@@ -63,12 +66,14 @@ private:
 
   struct
   {
-    std::vector<double> ydata;
-    std::optional<double> xline;
-    std::optional<double> yline;
-    std::optional<std::pair<double, double>> xlim;
-    std::optional<std::pair<double, double>> ylim;
-    std::optional<std::function<double(size_t, size_t)>> xmap;
+    std::vector<double> ydata = {};
+    std::optional<double> xline = std::nullopt;
+    std::optional<double> yline = std::nullopt;
+    std::optional<std::pair<double, double>> xlim = std::nullopt;
+    std::optional<std::pair<double, double>> ylim = std::nullopt;
+    std::optional<std::function<double(size_t, size_t)>> xmap = std::nullopt;
+    bool xlog = false;
+    bool ylog = false;
   }
   data;
 

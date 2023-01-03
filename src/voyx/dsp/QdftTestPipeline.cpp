@@ -14,7 +14,7 @@ QdftTestPipeline::QdftTestPipeline(const double samplerate, const size_t framesi
     const auto freqs = frequencies();
 
     plot->xmap([freqs](size_t i) { return freqs[i]; });
-    plot->xlim(0, 2e3);
+    plot->xlog();
     plot->ylim(-120, 0);
   }
 }
