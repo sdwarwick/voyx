@@ -14,7 +14,7 @@ public:
     SyncPipeline<sample_t>(source, sink),
     samplerate(samplerate),
     framesize(framesize),
-    qdft(samplerate, 50, 5000)
+    qdft(samplerate, 50, 2000)
   {
     data.dfts.resize(framesize * qdft.size());
   }
@@ -35,7 +35,7 @@ protected:
 
     qdft.qdft(input, dfts);
     (*this)(index, dfts);
-    // qdft.iqdft(dfts, output);
+    qdft.iqdft(dfts, output);
   }
 
   virtual void operator()(const size_t index, voyx::matrix<phasor_t> dfts) = 0;

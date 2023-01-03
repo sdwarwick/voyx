@@ -96,6 +96,26 @@ public:
     }
   }
 
+  T iqdft(const voyx::vector<std::complex<F>> dft)
+  {
+    F sample = F(0);
+
+    for (size_t i = 0; i < dft.size(); ++i)
+    {
+      sample += (dft[i] * cache.twiddles[i]).real();
+    }
+
+    return static_cast<T>(sample);
+  }
+
+  void iqdft(const voyx::matrix<std::complex<F>> dfts, voyx::vector<T> samples)
+  {
+    for (size_t i = 0; i < samples.size(); ++i)
+    {
+      samples[i] = iqdft(dfts[i]);
+    }
+  }
+
 private:
 
   const double samplerate;
