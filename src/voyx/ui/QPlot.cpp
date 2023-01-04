@@ -224,6 +224,20 @@ void QPlot::plot(const std::span<const double> y)
   data.ydata = std::vector<double>(y.begin(), y.end());
 }
 
+void QPlot::scatter(const std::span<const double> x, const std::span<const double> y)
+{
+  if (pause)
+  {
+    return;
+  }
+
+  voyxassert(x.size() == y.size());
+
+  std::lock_guard lock(mutex);
+  data.xscatter = std::vector<double>(x.begin(), x.end());
+  data.yscatter = std::vector<double>(y.begin(), y.end());
+}
+
 void QPlot::xline(const std::optional<double> x)
 {
   if (pause)
@@ -316,17 +330,22 @@ void QPlot::addPlot(const size_t row, const size_t col, const size_t graphs)
 {
   auto plot = std::make_shared<QPlotWidget>();
 
-  for (size_t i = 0; i < graphs; ++i)
+  for (size_t i = 0; i < graphs + 1; ++i)
   {
+    plot->addGraph();
+
     QPen pen;
-
     pen.setStyle(Qt::SolidLine);
-
     pen.setColor(getLineColor(i));
     pen.setWidth(getLineWidth(i));
 
-    plot->addGraph();
     plot->graph(i)->setPen(pen);
+
+    if (i >= graphs)
+    {
+      plot->graph(i)->setLineStyle(QCPGraph::lsNone);
+      plot->graph(i)->setScatterStyle(QCPScatterStyle::ssStar);
+    }
   }
 
   layout->addWidget(plot.get(), row, col);
@@ -348,9 +367,7 @@ void QPlot::addPlot(const size_t row, const size_t col, const size_t graphs)
   auto yline = new QCPItemStraightLine(plot.get());
   {
     QPen pen;
-
     pen.setStyle(Qt::DashLine);
-
     pen.setColor(getLineColor(-1));
     pen.setWidth(getLineWidth(-1));
 
@@ -408,6 +425,8 @@ void QPlot::loop()
     std::this_thread::sleep_for(delay);
 
     std::vector<double> ydata;
+    std::optional<std::vector<double>> xscatter;
+    std::optional<std::vector<double>> yscatter;
     std::optional<double> xline;
     std::optional<double> yline;
     std::optional<std::pair<double, double>> xlim;
@@ -418,6 +437,8 @@ void QPlot::loop()
     {
       std::lock_guard lock(mutex);
       ydata = data.ydata;
+      xscatter = data.xscatter;
+      yscatter = data.yscatter;
       xline = data.xline;
       yline = data.yline;
       xlim = data.xlim;
@@ -429,7 +450,7 @@ void QPlot::loop()
 
     std::vector<double> xdata(ydata.size());
     {
-      if (xmap.has_value())
+      if (xmap)
       {
         const size_t n = xdata.size();
 
@@ -446,10 +467,11 @@ void QPlot::loop()
 
     auto plot = getPlot(row, col);
     {
-      // x,y data
+      // data
 
       const size_t size = std::min(
-        xdata.size(), ydata.size());
+        xdata.size(),
+        ydata.size());
 
       QVector<double> x(size), y(size);
 
@@ -461,9 +483,28 @@ void QPlot::loop()
 
       plot->graph(graph)->setData(x, y);
 
-      // x,y lines
+      // scatter
 
-      if (xline.has_value())
+      if (xscatter && yscatter)
+      {
+        const size_t size = std::min(
+          xscatter.value().size(),
+          yscatter.value().size());
+
+        QVector<double> x(size), y(size);
+
+        for (size_t i = 0; i < size; ++i)
+        {
+          x[i] = xscatter.value()[i];
+          y[i] = yscatter.value()[i];
+        }
+
+        plot->graph(graph + 1)->setData(x, y);
+      }
+
+      // lines
+
+      if (xline)
       {
         xlines.at(plot)->setVisible(true);
         xlines.at(plot)->point1->setCoords(xline.value(), 0);
@@ -474,7 +515,7 @@ void QPlot::loop()
         xlines.at(plot)->setVisible(false);
       }
 
-      if (yline.has_value())
+      if (yline)
       {
         ylines.at(plot)->setVisible(true);
         ylines.at(plot)->point1->setCoords(0, yline.value());
@@ -485,9 +526,9 @@ void QPlot::loop()
         ylines.at(plot)->setVisible(false);
       }
 
-      // x,y lim
+      // lim
 
-      if (xlim.has_value())
+      if (xlim)
       {
         const double xmin = xlim.value().first;
         const double xmax = xlim.value().second;
@@ -502,7 +543,7 @@ void QPlot::loop()
         plot->xAxis->setRange(xmin, xmax);
       }
 
-      if (ylim.has_value())
+      if (ylim)
       {
         const double ymin = ylim.value().first;
         const double ymax = ylim.value().second;
@@ -517,7 +558,7 @@ void QPlot::loop()
         plot->yAxis->setRange(ymin, ymax);
       }
 
-      // x,y log or lin
+      // log or lin
 
       if (xlog)
       {

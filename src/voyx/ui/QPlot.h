@@ -35,6 +35,8 @@ public:
   void plot(const std::span<const float> y) override;
   void plot(const std::span<const double> y) override;
 
+  void scatter(const std::span<const double> x, const std::span<const double> y) override;
+
   void xline(const std::optional<double> x) override;
   void yline(const std::optional<double> y) override;
 
@@ -81,6 +83,8 @@ private:
   struct
   {
     std::vector<double> ydata = {};
+    std::optional<std::vector<double>> xscatter = {};
+    std::optional<std::vector<double>> yscatter = {};
     std::optional<double> xline = std::nullopt;
     std::optional<double> yline = std::nullopt;
     std::optional<std::pair<double, double>> xlim = std::nullopt;

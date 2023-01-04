@@ -14,6 +14,8 @@ public:
   virtual void plot(const std::span<const float> y) = 0;
   virtual void plot(const std::span<const double> y) = 0;
 
+  virtual void scatter(const std::span<const double> x, const std::span<const double> y) = 0;
+
   virtual void xline(const std::optional<double> x) = 0;
   virtual void yline(const std::optional<double> y) = 0;
 
