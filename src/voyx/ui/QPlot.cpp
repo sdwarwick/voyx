@@ -83,7 +83,12 @@ private:
 
   void mousePressEvent(QMouseEvent* event) override
   {
-    if (event->button() == Qt::LeftButton)
+    if (event->button() == Qt::RightButton)
+    {
+      lock = true;
+      callbacks.touch(true);
+    }
+    else if (event->button() == Qt::LeftButton)
     {
       lock = false;
       callbacks.touch(true);
