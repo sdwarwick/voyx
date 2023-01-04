@@ -5,7 +5,7 @@
 namespace $$
 {
   template<typename value_getter_t, typename T>
-  std::vector<size_t> pickpeaks(const std::vector<T> vector, const size_t radius = 0)
+  std::vector<size_t> pickpeaks(const voyx::vector<T> vector, const size_t radius = 0)
   {
     using value_t = typename $$::typeofvalue<T>::type;
     const value_getter_t getvalue;
@@ -70,6 +70,12 @@ namespace $$
   }
 
   template<typename value_getter_t, typename T>
+  std::vector<size_t> pickpeaks(const std::vector<T>& vector, const size_t radius = 0)
+  {
+    return $$::pickpeaks<value_getter_t>(voyx::vector<T>(vector), radius);
+  }
+
+  template<typename value_getter_t, typename T>
   size_t argmax(const voyx::vector<T> vector)
   {
     using value_t = typename $$::typeofvalue<T>::type;
@@ -98,7 +104,13 @@ namespace $$
   }
 
   template<typename value_getter_t, typename T>
-  std::vector<size_t> argmax(const voyx::matrix<T> matrix, size_t axis = 0)
+  size_t argmax(const std::vector<T>& vector)
+  {
+    return $$::argmax<value_getter_t>(voyx::vector<T>(vector));
+  }
+
+  template<typename value_getter_t, typename T>
+  std::vector<size_t> argmax(const voyx::matrix<T> matrix, const size_t axis = 0)
   {
     using value_t = typename $$::typeofvalue<T>::type;
     const value_getter_t getvalue;
