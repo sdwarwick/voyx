@@ -37,7 +37,7 @@ namespace $$
   struct abs
   {
     template<typename T>
-    T operator()(const T value) const { return value; };
+    T operator()(const T value) const { return std::abs(value); };
 
     template<typename T>
     T operator()(const std::complex<T>& value) const { return std::abs(value); };
