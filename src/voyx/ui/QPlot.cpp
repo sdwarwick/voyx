@@ -66,10 +66,26 @@ private:
   }
   callbacks;
 
+  bool lock = false;
+
+  void mouseDoubleClickEvent(QMouseEvent* event) override
+  {
+    if (event->button() == Qt::LeftButton)
+    {
+      lock = true;
+      callbacks.touch(true);
+    }
+    else
+    {
+      QCustomPlot::mouseDoubleClickEvent(event);
+    }
+  }
+
   void mousePressEvent(QMouseEvent* event) override
   {
     if (event->button() == Qt::LeftButton)
     {
+      lock = false;
       callbacks.touch(true);
     }
     else
@@ -82,7 +98,7 @@ private:
   {
     if (event->button() == Qt::LeftButton)
     {
-      callbacks.touch(false);
+      callbacks.touch(lock);
     }
     else
     {
