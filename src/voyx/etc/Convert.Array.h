@@ -41,11 +41,11 @@ namespace $$
   }
 
   template<typename T>
-  nc::NdArray<nc::uint32> pickpeaks(const nc::NdArray<T>& vector, const size_t radius = 0)
+  nc::NdArray<uint32_t> pickpeaks(const nc::NdArray<T>& vector, const size_t radius = 0)
   {
     if (!vector.size())
     {
-      return nc::NdArray<nc::uint32>();
+      return nc::NdArray<uint32_t>();
     }
 
     std::vector<size_t> peaks;
@@ -99,7 +99,7 @@ namespace $$
 
     auto ndpeaks = nc::NdArray<size_t>(peaks.data(), peaks.size(), false);
 
-    return ndpeaks.astype<nc::uint32>(); // WTF
+    return ndpeaks.astype<uint32_t>(); // WTF
   }
 
   // TODO: use numcpp
