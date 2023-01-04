@@ -26,11 +26,28 @@ QString double2qstring(const double value, const int precision = 1)
 class QPlotWindow : public QMainWindow
 {
 
+public:
+
+  void touch(std::function<void()> callback)
+  {
+    callbacks.touch = callback;
+  }
+
 private:
+
+  struct
+  {
+    std::function<void()> touch = [](){};
+  }
+  callbacks;
 
   void keyPressEvent(QKeyEvent* event) override
   {
-    if (event->key() == Qt::Key_Escape)
+    if (event->key() == Qt::Key_Space)
+    {
+      callbacks.touch();
+    }
+    else if (event->key() == Qt::Key_Escape)
     {
       close();
     }
@@ -158,6 +175,11 @@ QPlot::QPlot(const std::chrono::duration<double> delay) :
   layout = std::make_shared<QGridLayout>();
   widget->setLayout(layout.get());
   window->setCentralWidget(widget.get());
+
+  std::static_pointer_cast<QPlotWindow>(window)->touch([&]()
+  {
+    pause = !pause;
+  });
 
   addPlot(0, 0, 1);
 
