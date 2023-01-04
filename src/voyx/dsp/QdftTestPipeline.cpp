@@ -25,28 +25,20 @@ void QdftTestPipeline::operator()(const size_t index,
 {
   if (plot != nullptr)
   {
-    const auto dft = dfts.front();
+    const auto dft = dfts.front().ndarray();
 
-    std::vector<double> abs(dft.size());
+    auto abs = nc::abs(dft);
 
-    for (size_t i = 0; i < dft.size(); ++i)
-    {
-      abs[i] = std::abs(dft[i]);
-    }
+    const auto freqs = $$::ndarray(frequencies());
+    const auto peaks = $$::pickpeaks(abs, 3);
 
-    const auto freqs = frequencies();
-    const auto peaks = $$::pickpeaks<$$::real>(abs, 3);
+    const auto abspeak = nc::argmax(abs);
+    const auto freqpeak = freqs[abspeak].front();
 
-    const auto abspeak = $$::argmax<$$::real>(abs);
-    const auto freqpeak = freqs[abspeak];
+    abs = 20.0 * nc::log10(abs);
 
-    for (size_t i = 0; i < dft.size(); ++i)
-    {
-      abs[i] = 20 * std::log10(abs[i]);
-    }
-
-    const auto xpeaks = $$::lookup(peaks, freqs);
-    const auto ypeaks = $$::lookup(peaks, abs);
+    const auto xpeaks = freqs[peaks];
+    const auto ypeaks = abs[peaks];
 
     plot->plot(abs);
     plot->scatter(xpeaks, ypeaks);

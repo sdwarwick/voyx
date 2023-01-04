@@ -44,6 +44,8 @@
  * Following by custom types.
  **/
 
+#include <NumCpp.hpp>
+
 #include <voyx/etc/Assert.h>
 #include <voyx/etc/Vector.h>
 #include <voyx/etc/Matrix.h>

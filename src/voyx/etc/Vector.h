@@ -44,7 +44,8 @@ namespace voyx
 
     vector(T* data, const size_t size) :
       vector_data(data),
-      vector_size(size)
+      vector_size(size),
+      vector_ndarray(data, size, false)
     {
     }
 
@@ -59,6 +60,11 @@ namespace voyx
     }
 
     vector(voyx::vector<T>& other) :
+      vector(other.data(), other.size())
+    {
+    }
+
+    vector(nc::NdArray<T>& other) :
       vector(other.data(), other.size())
     {
     }
@@ -102,6 +108,9 @@ namespace voyx
     size_t size() const { return vector_size; }
 
     bool empty() const { return vector_size == 0; }
+
+    nc::NdArray<T>& ndarray() { return vector_ndarray; }
+    const nc::NdArray<T>& ndarray() const { return vector_ndarray; }
 
     // SUBSCRIPT OPERATORS
 
@@ -190,6 +199,7 @@ namespace voyx
 
     T* vector_data;
     size_t vector_size;
+    nc::NdArray<T> vector_ndarray;
 
   };
 }

@@ -5,15 +5,104 @@
 namespace $$
 {
   template<typename T>
-  std::vector<T> lookup(const std::vector<size_t>& indices, const std::vector<T>& lut)
+  nc::NdArray<T> ndarray(const T* data, const size_t size)
   {
-    std::vector<T> values(indices.size());
-
-    std::transform(indices.begin(), indices.end(), values.begin(),
-      [&lut](size_t i) { return lut[i]; });
-
-    return values;
+    return nc::NdArray<T>(data, size);
   }
+
+  template<typename T>
+  nc::NdArray<T> ndarray(const std::span<const T> span)
+  {
+    return nc::NdArray<T>(span.data(), span.size());
+  }
+
+  template<typename T>
+  nc::NdArray<T> ndarray(const std::span<T> span)
+  {
+    return nc::NdArray<T>(span.data(), span.size());
+  }
+
+  template<typename T>
+  nc::NdArray<T> ndarray(const std::vector<T>& vector)
+  {
+    return nc::NdArray<T>(vector.data(), vector.size());
+  }
+
+  template<typename T>
+  nc::NdArray<T> ndarray(const voyx::vector<T> vector)
+  {
+    return nc::NdArray<T>(vector.data(), vector.size());
+  }
+
+  template<typename T>
+  nc::NdArray<T> ndarray(const voyx::matrix<T> matrix)
+  {
+    return nc::NdArray<T>(matrix.data(), matrix.size(), matrix.stride());
+  }
+
+  template<typename T>
+  nc::NdArray<nc::uint32> pickpeaks(const nc::NdArray<T>& vector, const size_t radius = 0)
+  {
+    if (!vector.size())
+    {
+      return nc::NdArray<nc::uint32>();
+    }
+
+    std::vector<size_t> peaks;
+
+    if (radius)
+    {
+      const ptrdiff_t r = radius;
+
+      for (ptrdiff_t i = r; i < vector.size() - r; ++i)
+      {
+        const T value = vector[i];
+
+        bool ispeak = true;
+
+        for (ptrdiff_t j = i - r; j <= i + r; ++j)
+        {
+          if (j == i)
+          {
+            continue;
+          }
+
+          if (vector[j] > value)
+          {
+            ispeak = false;
+            break;
+          }
+        }
+
+        if (ispeak)
+        {
+          peaks.push_back(i);
+        }
+      }
+    }
+    else
+    {
+      T value = vector[0];
+      size_t index = 0;
+
+      for (size_t i = 1; i < vector.size(); ++i)
+      {
+        if (vector[i] > value)
+        {
+          value = vector[i];
+          index = i;
+        }
+      }
+
+      peaks.push_back(index);
+    }
+
+    auto ndpeaks = nc::NdArray<size_t>(peaks.data(), peaks.size(), false);
+
+    return ndpeaks.astype<nc::uint32>(); // WTF
+  }
+
+  // TODO: use numcpp
 
   template<typename value_getter_t, typename T>
   std::vector<size_t> pickpeaks(const voyx::vector<T> vector, const size_t radius = 0)
@@ -78,12 +167,6 @@ namespace $$
     }
 
     return peaks;
-  }
-
-  template<typename value_getter_t, typename T>
-  std::vector<size_t> pickpeaks(const std::vector<T>& vector, const size_t radius = 0)
-  {
-    return $$::pickpeaks<value_getter_t>(voyx::vector<T>(vector), radius);
   }
 
   template<typename value_getter_t, typename T>

@@ -46,7 +46,8 @@ namespace voyx
     matrix(T* data, const size_t size, const size_t stride) :
       matrix_data(data),
       matrix_size(size / stride),
-      matrix_stride(stride)
+      matrix_stride(stride),
+      matrix_ndarray(data, size / stride, stride, false)
     {
     }
 
@@ -116,6 +117,9 @@ namespace voyx
 
     bool empty() const { return matrix_size == 0 || matrix_stride == 0; }
 
+    nc::NdArray<T>& ndarray() { return matrix_ndarray; }
+    const nc::NdArray<T>& ndarray() const { return matrix_ndarray; }
+
     // SUBSCRIPT OPERATORS
 
     const vector<T> operator[](const size_t i) const
@@ -164,6 +168,7 @@ namespace voyx
     T* matrix_data;
     size_t matrix_size;   // rows
     size_t matrix_stride; // cols
+    nc::NdArray<T> matrix_ndarray;
 
   };
 }
