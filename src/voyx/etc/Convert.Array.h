@@ -5,6 +5,71 @@
 namespace $$
 {
   template<typename value_getter_t, typename T>
+  std::vector<size_t> pickpeaks(const std::vector<T> vector, const size_t radius = 0)
+  {
+    using value_t = typename $$::typeofvalue<T>::type;
+    const value_getter_t getvalue;
+
+    static_assert(std::is_arithmetic<value_t>::value);
+
+    std::vector<size_t> peaks;
+
+    if (vector.empty())
+    {
+      return peaks;
+    }
+
+    if (radius)
+    {
+      const ptrdiff_t r = radius;
+
+      for (ptrdiff_t i = r; i < vector.size() - r; ++i)
+      {
+        const value_t value = getvalue(vector[i]);
+
+        bool ispeak = true;
+
+        for (ptrdiff_t j = i - r; j <= i + r; ++j)
+        {
+          if (j == i)
+          {
+            continue;
+          }
+
+          if (getvalue(vector[j]) > value)
+          {
+            ispeak = false;
+            break;
+          }
+        }
+
+        if (ispeak)
+        {
+          peaks.push_back(i);
+        }
+      }
+    }
+    else
+    {
+      value_t value = getvalue(vector[0]);
+      size_t index = 0;
+
+      for (size_t i = 1; i < vector.size(); ++i)
+      {
+        if (getvalue(vector[i]) > value)
+        {
+          value = getvalue(vector[i]);
+          index = i;
+        }
+      }
+
+      peaks.push_back(index);
+    }
+
+    return peaks;
+  }
+
+  template<typename value_getter_t, typename T>
   size_t argmax(const voyx::vector<T> vector)
   {
     using value_t = typename $$::typeofvalue<T>::type;
