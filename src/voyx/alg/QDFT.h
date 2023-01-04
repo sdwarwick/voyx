@@ -20,23 +20,23 @@ class QDFT
 
 public:
 
-  QDFT(const double samplerate, std::pair<double, double> roi, const double resolution = 24, const double latency = 0)
+  QDFT(const double samplerate, std::pair<double, double> bandwidth, const double resolution = 24, const double latency = 0)
   {
     const F pi = F(2) * std::acos(F(-1));
 
     config.samplerate = samplerate;
-    config.roi = roi;
+    config.bandwidth = bandwidth;
     config.resolution = resolution;
     config.latency = latency;
     config.quality = std::pow(std::pow(2.0, 1.0 / resolution) - 1.0, -1.0);
-    config.size = std::ceil(resolution * std::log2(roi.second / roi.first));
+    config.size = std::ceil(resolution * std::log2(bandwidth.second / bandwidth.first));
 
     config.frequencies.resize(config.size);
     data.resize(config.size + 1);
 
     for (size_t i = 0; i < config.size; ++i)
     {
-      const double frequency = config.roi.first * std::pow(2.0, i / config.resolution);
+      const double frequency = config.bandwidth.first * std::pow(2.0, i / config.resolution);
       const double period = std::ceil(config.quality * config.samplerate / frequency);
       const double weight = 1.0 / period;
 
@@ -130,7 +130,7 @@ private:
   struct qdft_config_t
   {
     double samplerate;
-    std::pair<double, double> roi;
+    std::pair<double, double> bandwidth;
     double resolution;
     double latency;
     double quality;
