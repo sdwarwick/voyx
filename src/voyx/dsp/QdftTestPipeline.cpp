@@ -15,6 +15,7 @@ QdftTestPipeline::QdftTestPipeline(const double samplerate, const size_t framesi
 
     plot->xmap([freqs](size_t i) { return freqs[i]; });
     plot->xlog();
+    plot->xlim(50, 5e3);
     plot->ylim(-120, 0);
   }
 }
@@ -33,11 +34,22 @@ void QdftTestPipeline::operator()(const size_t index,
       abs[i] = std::abs(dft[i]);
     }
 
+    const auto freqs = frequencies();
+    const auto peaks = $$::pickpeaks<$$::real>(abs, 3);
+
+    const auto abspeak = $$::argmax<$$::real>(abs);
+    const auto freqpeak = freqs[abspeak];
+
     for (size_t i = 0; i < dft.size(); ++i)
     {
       abs[i] = 20 * std::log10(abs[i]);
     }
 
+    const auto xpeaks = $$::lookup(peaks, freqs);
+    const auto ypeaks = $$::lookup(peaks, abs);
+
     plot->plot(abs);
+    plot->scatter(xpeaks, ypeaks);
+    plot->xline(freqpeak);
   }
 }

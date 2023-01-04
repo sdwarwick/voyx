@@ -14,7 +14,7 @@ public:
     SyncPipeline<sample_t>(source, sink),
     samplerate(samplerate),
     framesize(framesize),
-    qdft(samplerate, { 50, 20000 }, 24, 1)
+    qdft(samplerate, { 50, 15000 }, 24, 0)
   {
     data.dfts.resize(framesize * qdft.size());
   }
