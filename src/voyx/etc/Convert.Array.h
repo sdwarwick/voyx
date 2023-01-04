@@ -4,6 +4,17 @@
 
 namespace $$
 {
+  template<typename T>
+  std::vector<T> lookup(const std::vector<size_t>& indices, const std::vector<T>& lut)
+  {
+    std::vector<T> values(indices.size());
+
+    std::transform(indices.begin(), indices.end(), values.begin(),
+      [&lut](size_t i) { return lut[i]; });
+
+    return values;
+  }
+
   template<typename value_getter_t, typename T>
   std::vector<size_t> pickpeaks(const voyx::vector<T> vector, const size_t radius = 0)
   {
