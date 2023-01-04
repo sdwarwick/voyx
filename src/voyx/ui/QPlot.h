@@ -10,8 +10,12 @@
 #include <QApplication>
 #include <QColor>
 #include <QGridLayout>
+#include <QHBoxLayout>
 #include <QKeyEvent>
+#include <QLabel>
+#include <QMainWindow>
 #include <QPen>
+#include <QStatusBar>
 #include <QWidget>
 
 class QPlot : public Plot
@@ -57,12 +61,22 @@ private:
   const std::chrono::duration<double> delay;
 
   std::shared_ptr<QApplication> application;
+  std::shared_ptr<QMainWindow> window;
+
   std::shared_ptr<QWidget> widget;
   std::shared_ptr<QGridLayout> layout;
-
   std::vector<std::shared_ptr<QCustomPlot>> plots;
   std::map<QCustomPlot*, QCPItemStraightLine*> xlines;
   std::map<QCustomPlot*, QCPItemStraightLine*> ylines;
+
+  struct
+  {
+    std::shared_ptr<QStatusBar> statusbar;
+    std::shared_ptr<QWidget> widget;
+    std::shared_ptr<QHBoxLayout> layout;
+    std::map<std::string, std::shared_ptr<QLabel>> labels;
+  }
+  status;
 
   struct
   {

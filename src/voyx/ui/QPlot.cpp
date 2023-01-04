@@ -11,7 +11,19 @@ namespace args
   int argc = sizeof(argv) / sizeof(char*) - 1;
 }
 
-class QCloseOnEscapeWidget : public QWidget
+QString double2qstring(const double value, const int precision = 1)
+{
+  std::stringstream stream;
+
+  stream << std::fixed << std::setprecision(precision) << value;
+
+  const std::string cstring = stream.str();
+  const QString qstring = QString::fromUtf8(cstring.c_str());
+
+  return qstring;
+}
+
+class QPlotWindow : public QMainWindow
 {
 
 private:
@@ -30,25 +42,35 @@ private:
 
 };
 
-class QCustomTouchPlot : public QCustomPlot
+class QPlotWidget : public QCustomPlot
 {
 
 public:
 
   void touch(std::function<void(bool state)> callback)
   {
-    this->callback = callback;
+    callbacks.touch = callback;
+  }
+
+  void xy(std::function<void(double x, double y)> callback)
+  {
+    callbacks.xy = callback;
   }
 
 private:
 
-  std::function<void(bool)> callback = [](bool state){};
+  struct
+  {
+    std::function<void(bool)> touch = [](bool state){};
+    std::function<void(double, double)> xy = [](double x, double y){};
+  }
+  callbacks;
 
   void mousePressEvent(QMouseEvent* event) override
   {
     if (event->button() == Qt::LeftButton)
     {
-      callback(true);
+      callbacks.touch(true);
     }
     else
     {
@@ -60,12 +82,20 @@ private:
   {
     if (event->button() == Qt::LeftButton)
     {
-      callback(false);
+      callbacks.touch(false);
     }
     else
     {
       QCustomPlot::mouseReleaseEvent(event);
     }
+  }
+
+  void mouseMoveEvent(QMouseEvent* event) override
+  {
+    const double x = xAxis->pixelToCoord(event->position().x());
+    const double y = yAxis->pixelToCoord(event->position().y());
+
+    callbacks.xy(x, y);
   }
 
 };
@@ -74,10 +104,39 @@ QPlot::QPlot(const std::chrono::duration<double> delay) :
   delay(delay)
 {
   application = std::make_shared<QApplication>(args::argc, args::argv);
-  widget = std::make_shared<QCloseOnEscapeWidget>();
+  window = std::make_shared<QPlotWindow>();
 
+  status.statusbar = std::make_shared<QStatusBar>();
+  window->setStatusBar(status.statusbar.get());
+
+  status.widget = std::make_shared<QWidget>();
+  status.layout = std::make_shared<QHBoxLayout>();
+  status.widget->setLayout(status.layout.get());
+  status.statusbar->addPermanentWidget(status.widget.get(), 1);
+
+  for (const auto& key : { "Cursor X", "cursor:x",
+                           "Cursor Y", "cursor:y",
+                           "Line X", "line:x",
+                           "Line Y", "line:y" })
+  {
+    status.labels[key] = std::make_shared<QLabel>(key);
+    status.layout->addWidget(status.labels[key].get());
+  }
+
+  status.labels["Cursor X"]->setStyleSheet("font-weight:500");
+  status.labels["Cursor Y"]->setStyleSheet("font-weight:500");
+  status.labels["Line X"]->setStyleSheet("font-weight:500");
+  status.labels["Line Y"]->setStyleSheet("font-weight:500");
+
+  status.labels["cursor:x"]->setText("");
+  status.labels["cursor:y"]->setText("");
+  status.labels["line:x"]->setText("");
+  status.labels["line:y"]->setText("");
+
+  widget = std::make_shared<QWidget>();
   layout = std::make_shared<QGridLayout>();
   widget->setLayout(layout.get());
+  window->setCentralWidget(widget.get());
 
   addPlot(0, 0, 1);
 
@@ -121,10 +180,9 @@ void QPlot::show()
 
 void QPlot::show(const size_t width, const size_t height)
 {
-  widget->setWindowTitle(args::arg0);
-  widget->resize(static_cast<int>(width), static_cast<int>(height));
-
-  widget->show();
+  window->setWindowTitle(args::arg0);
+  window->resize(static_cast<int>(width), static_cast<int>(height));
+  window->show();
   application->exec();
 }
 
@@ -159,6 +217,15 @@ void QPlot::xline(const std::optional<double> x)
 
   std::lock_guard lock(mutex);
   data.xline = x;
+
+  if (x)
+  {
+    status.labels["line:x"]->setText(double2qstring(x.value()));
+  }
+  else
+  {
+    status.labels["line:x"]->setText("");
+  }
 }
 
 void QPlot::yline(const std::optional<double> y)
@@ -170,6 +237,15 @@ void QPlot::yline(const std::optional<double> y)
 
   std::lock_guard lock(mutex);
   data.yline = y;
+
+  if (y)
+  {
+    status.labels["line:y"]->setText(double2qstring(y.value()));
+  }
+  else
+  {
+    status.labels["line:y"]->setText("");
+  }
 }
 
 void QPlot::xlim(const double min, const double max)
@@ -222,7 +298,7 @@ void QPlot::ylog()
 
 void QPlot::addPlot(const size_t row, const size_t col, const size_t graphs)
 {
-  auto plot = std::make_shared<QCustomTouchPlot>();
+  auto plot = std::make_shared<QPlotWidget>();
 
   for (size_t i = 0; i < graphs; ++i)
   {
@@ -242,6 +318,12 @@ void QPlot::addPlot(const size_t row, const size_t col, const size_t graphs)
   plot->touch([&](bool state)
   {
     pause = state;
+  });
+
+  plot->xy([&](double x, double y)
+  {
+    status.labels["cursor:x"]->setText(double2qstring(x));
+    status.labels["cursor:y"]->setText(double2qstring(y));
   });
 
   plots.push_back(plot);
