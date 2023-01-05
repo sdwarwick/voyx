@@ -30,7 +30,7 @@ void QdftTestPipeline::operator()(const size_t index,
     auto abs = nc::abs(dft);
 
     const auto freqs = $$::ndarray(frequencies());
-    const auto peaks = $$::pickpeaks(abs, 3);
+    const auto peaks = $$::findpeaks(abs, 3);
 
     const auto abspeak = nc::argmax(abs);
     const auto freqpeak = freqs[abspeak].front();
