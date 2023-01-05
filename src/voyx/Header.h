@@ -47,6 +47,8 @@
 #include <xtensor/xadapt.hpp>
 #include <xtensor/xarray.hpp>
 #include <xtensor/xindex_view.hpp>
+#include <xtensor/xio.hpp>
+#include <xtensor/xmath.hpp>
 #include <xtensor/xsort.hpp>
 #include <xtensor/xtensor.hpp>
 #include <xtensor/xview.hpp>

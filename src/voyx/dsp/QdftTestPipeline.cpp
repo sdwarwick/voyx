@@ -28,20 +28,23 @@ void QdftTestPipeline::operator()(const size_t index,
     const auto dft = dfts.front().xarray();
 
     auto&& abs = xt::eval(xt::abs(dft));
+    auto&& absdb = xt::eval($$::db(abs));
 
     const auto freqs = xt::adapt(frequencies());
     const auto peaks = $$::findpeaks(abs, 3);
 
-    const auto abspeak = xt::argmax(abs);
+    const auto abspeak = xt::argmax(abs)();
     const auto freqpeak = freqs[abspeak];
 
-    abs = 20.0 * xt::log10(abs);
-
     const auto xpeaks = xt::index_view(freqs, peaks);
-    const auto ypeaks = xt::index_view(abs, peaks);
+    const auto ypeaks = xt::index_view(absdb, peaks);
 
-    plot->plot(abs);
+    const auto a = $$::a_weighting(freqs);
+    const auto loudness = $$::db(xt::amax(abs * a))();
+
+    plot->plot(absdb);
     plot->scatter(xt::eval(xpeaks), xt::eval(ypeaks));
     plot->xline(freqpeak);
+    plot->yline(loudness);
   }
 }

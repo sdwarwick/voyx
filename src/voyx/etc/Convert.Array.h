@@ -5,6 +5,35 @@
 namespace $$
 {
   template<typename E>
+  auto db(E&& expression, const double bias = 1e-7)
+  {
+    return 20 * xt::log10(E{expression} + bias);
+  }
+
+  template<typename E>
+  auto a_weighting(E&& expression)
+  {
+    auto&& f1 = xt::eval(expression);
+
+    auto f2 = xt::pow(f1, 2.0);
+    auto f4 = xt::pow(f2, 2.0);
+
+    auto a = f4 * std::pow(12194.0, 2);
+    auto b = f2 + std::pow(20.6, 2);
+    auto c = f2 + std::pow(107.7, 2);
+    auto d = f2 + std::pow(737.9, 2);
+    auto e = f2 + std::pow(12194.0, 2);
+
+    return xt::eval(a / (b * xt::sqrt(c * d) * e));
+  }
+
+  template<typename E>
+  auto a_weighting_db(E&& expression)
+  {
+    return xt::eval($$::db($$::a_weighting(expression)) + 2);
+  }
+
+  template<typename E>
   std::vector<size_t> findpeaks(E&& expression, const size_t radius = 0)
   {
     auto&& array = xt::eval(expression);
