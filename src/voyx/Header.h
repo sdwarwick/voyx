@@ -44,7 +44,12 @@
  * Following by custom types.
  **/
 
-#include <NumCpp.hpp>
+#include <xtensor/xadapt.hpp>
+#include <xtensor/xarray.hpp>
+#include <xtensor/xindex_view.hpp>
+#include <xtensor/xsort.hpp>
+#include <xtensor/xtensor.hpp>
+#include <xtensor/xview.hpp>
 
 #include <voyx/etc/Assert.h>
 #include <voyx/etc/Vector.h>

@@ -25,23 +25,23 @@ void QdftTestPipeline::operator()(const size_t index,
 {
   if (plot != nullptr)
   {
-    const auto dft = dfts.front().ndarray();
+    const auto dft = dfts.front().xarray();
 
-    auto abs = nc::abs(dft);
+    auto&& abs = xt::eval(xt::abs(dft));
 
-    const auto freqs = $$::ndarray(frequencies());
+    const auto freqs = xt::adapt(frequencies());
     const auto peaks = $$::findpeaks(abs, 3);
 
-    const auto abspeak = nc::argmax(abs);
-    const auto freqpeak = freqs[abspeak].front();
+    const auto abspeak = xt::argmax(abs);
+    const auto freqpeak = freqs[abspeak];
 
-    abs = 20.0 * nc::log10(abs);
+    abs = 20.0 * xt::log10(abs);
 
-    const auto xpeaks = freqs[peaks];
-    const auto ypeaks = abs[peaks];
+    const auto xpeaks = xt::index_view(freqs, peaks);
+    const auto ypeaks = xt::index_view(abs, peaks);
 
     plot->plot(abs);
-    plot->scatter(xpeaks, ypeaks);
+    plot->scatter(xt::eval(xpeaks), xt::eval(ypeaks));
     plot->xline(freqpeak);
   }
 }

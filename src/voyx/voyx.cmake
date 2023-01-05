@@ -21,14 +21,15 @@ target_link_libraries(voyx
           easyloggingpp
           fmt
           mlinterp
-          numcpp
           pocketfft
           qcustomplot
           qt
           readerwriterqueue
           rtaudio
           rtmidi
-          sdft)
+          sdft
+          xtensor
+          xtl)
 
 target_compile_features(voyx
   PRIVATE cxx_std_20)

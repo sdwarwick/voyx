@@ -4,48 +4,14 @@
 
 namespace $$
 {
-  template<typename T>
-  nc::NdArray<T> ndarray(const T* data, const size_t size)
+  template<typename E>
+  std::vector<size_t> findpeaks(E&& expression, const size_t radius = 0)
   {
-    return nc::NdArray<T>(data, size);
-  }
+    auto&& array = xt::eval(expression);
 
-  template<typename T>
-  nc::NdArray<T> ndarray(const std::span<const T> span)
-  {
-    return nc::NdArray<T>(span.data(), span.size());
-  }
-
-  template<typename T>
-  nc::NdArray<T> ndarray(const std::span<T> span)
-  {
-    return nc::NdArray<T>(span.data(), span.size());
-  }
-
-  template<typename T>
-  nc::NdArray<T> ndarray(const std::vector<T>& vector)
-  {
-    return nc::NdArray<T>(vector.data(), vector.size());
-  }
-
-  template<typename T>
-  nc::NdArray<T> ndarray(const voyx::vector<T> vector)
-  {
-    return nc::NdArray<T>(vector.data(), vector.size());
-  }
-
-  template<typename T>
-  nc::NdArray<T> ndarray(const voyx::matrix<T> matrix)
-  {
-    return nc::NdArray<T>(matrix.data(), matrix.size(), matrix.stride());
-  }
-
-  template<typename T>
-  nc::NdArray<uint32_t> findpeaks(const nc::NdArray<T>& vector, const size_t radius = 0)
-  {
-    if (!vector.size())
+    if (!array.size())
     {
-      return nc::NdArray<uint32_t>();
+      return {};
     }
 
     std::vector<size_t> peaks;
@@ -54,9 +20,9 @@ namespace $$
     {
       const ptrdiff_t r = radius;
 
-      for (ptrdiff_t i = r; i < vector.size() - r; ++i)
+      for (ptrdiff_t i = r; i < array.size() - r; ++i)
       {
-        const T value = vector[i];
+        const auto value = array.flat(i);
 
         bool ispeak = true;
 
@@ -67,7 +33,7 @@ namespace $$
             continue;
           }
 
-          if (vector[j] > value)
+          if (array.flat(j) > value)
           {
             ispeak = false;
             break;
@@ -82,14 +48,14 @@ namespace $$
     }
     else
     {
-      T value = vector[0];
+      auto value = array.flat(0);
       size_t index = 0;
 
-      for (size_t i = 1; i < vector.size(); ++i)
+      for (size_t i = 1; i < array.size(); ++i)
       {
-        if (vector[i] > value)
+        if (array.flat(i) > value)
         {
-          value = vector[i];
+          value = array.flat(i);
           index = i;
         }
       }
@@ -97,12 +63,10 @@ namespace $$
       peaks.push_back(index);
     }
 
-    auto ndpeaks = nc::NdArray<size_t>(peaks.data(), peaks.size(), false);
-
-    return ndpeaks.astype<uint32_t>(); // WTF
+    return peaks;
   }
 
-  // TODO: use numcpp
+  // TODO: use xtensor
 
   template<typename value_getter_t, typename T>
   std::vector<size_t> argmax(const voyx::matrix<T> matrix, const size_t axis = 0)
