@@ -109,7 +109,7 @@ namespace voyx
         vector_data,
         vector_size,
         xt::no_ownership(),
-        std::vector<std::size_t>({ vector_size }));
+        std::vector<size_t>({ vector_size }));
     }
 
     const xt::xarray<T> xarray() const
@@ -118,7 +118,7 @@ namespace voyx
         vector_data,
         vector_size,
         xt::no_ownership(),
-        std::vector<std::size_t>({ vector_size }));
+        std::vector<size_t>({ vector_size }));
     }
 
     // SUBSCRIPT OPERATORS
