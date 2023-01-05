@@ -34,12 +34,8 @@ public:
     sink->close();
   }
 
-  void start()
-  {
-    start(0);
-  }
-
-  void start(const std::chrono::duration<double> duration)
+  void start(const std::chrono::duration<double> duration = std::chrono::duration<double>::zero(),
+             const std::chrono::duration<double> timeout = std::chrono::duration<double>::zero())
   {
     const double seconds = static_cast<double>(
       std::chrono::duration_cast<std::chrono::seconds>(duration).count());
@@ -47,17 +43,12 @@ public:
     const size_t frames = static_cast<size_t>(
       std::ceil(seconds * sink->samplerate() / sink->framesize()));
 
-    start(frames);
-  }
-
-  void start(const size_t frames)
-  {
     stop();
 
     source->start();
     sink->start();
 
-    onstart(frames);
+    onstart(frames, timeout);
 
     if (frames > 0)
     {
@@ -78,7 +69,7 @@ public:
   const std::shared_ptr<Source<T>> source;
   const std::shared_ptr<Sink<T>> sink;
 
-  virtual void onstart(const size_t frames) = 0;
+  virtual void onstart(const size_t frames, const std::chrono::duration<double> timeout) = 0;
   virtual void onstop() = 0;
 
 };

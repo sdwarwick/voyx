@@ -54,7 +54,8 @@ int main(int argc, char** argv)
     ("m,midi",    "Input MIDI device name", cxxopts::value<std::string>()->default_value(""))
     ("i,input",   "Input audio device or .wav file name", cxxopts::value<std::string>()->default_value(""))
     ("o,output",  "Output audio device or .wav file name", cxxopts::value<std::string>()->default_value(""))
-    ("s,sec",     "Abort after specified number of seconds", cxxopts::value<int>()->default_value("0"))
+    ("s,seconds", "Abort after specified number of seconds", cxxopts::value<int>()->default_value("0"))
+    ("t,timeout", "Timeout in milliseconds", cxxopts::value<int>()->default_value("0"))
     ("a,a4",      "Concert pitch in hertz", cxxopts::value<double>()->default_value("440"))
     ("r,sr",      "Sample rate in hertz", cxxopts::value<double>()->default_value("44100"))
     ("w,window",  "STFT window size", cxxopts::value<int>()->default_value("1024"))
@@ -106,7 +107,8 @@ int main(int argc, char** argv)
   const std::string input = args["input"].as<std::string>();
   const std::string output = args["output"].as<std::string>();
 
-  const int seconds = std::abs(args["sec"].as<int>());
+  const int seconds = std::abs(args["seconds"].as<int>());
+  const int timeout = std::abs(args["timeout"].as<int>());
 
   const double concertpitch = std::abs(args["a4"].as<double>());
   const double samplerate = std::abs(args["sr"].as<double>());
@@ -189,11 +191,15 @@ int main(int argc, char** argv)
 
   if (seconds > 0)
   {
-    pipe->start(std::chrono::seconds(seconds));
+    pipe->start(
+      std::chrono::seconds(seconds),
+      std::chrono::milliseconds(timeout));
   }
   else
   {
-    pipe->start();
+    pipe->start(
+      std::chrono::seconds(seconds),
+      std::chrono::milliseconds(timeout));
 
     if (plot != nullptr)
     {

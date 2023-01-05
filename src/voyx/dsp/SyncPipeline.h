@@ -18,12 +18,12 @@ public:
 
 protected:
 
-  void onstart(const size_t frames) override
+  void onstart(const size_t frames, const std::chrono::duration<double> timeout) override
   {
     doloop = true;
 
     thread = std::make_shared<std::thread>(
-      [frames, this](){ loop(frames); });
+      [frames, timeout, this](){ loop(frames, timeout); });
 
     if (frames > 0)
     {
@@ -56,7 +56,7 @@ private:
   std::shared_ptr<std::thread> thread;
   bool doloop = false;
 
-  void loop(const size_t frames)
+  void loop(const size_t frames, const std::chrono::duration<double> timeout)
   {
     struct
     {
@@ -93,6 +93,11 @@ private:
         }
 
         index += ok ? 1 : 0;
+
+        if (timeout != std::chrono::duration<double>::zero())
+        {
+          std::this_thread::sleep_for(timeout);
+        }
       }
 
       LOG(INFO)
@@ -149,6 +154,11 @@ private:
         }
 
         index += ok ? 1 : 0;
+
+        if (timeout != std::chrono::duration<double>::zero())
+        {
+          std::this_thread::sleep_for(timeout);
+        }
       }
     }
   }
