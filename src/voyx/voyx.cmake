@@ -23,6 +23,7 @@ target_link_libraries(voyx
           mlinterp
           pocketfft
           qcustomplot
+          qdft
           qt
           readerwriterqueue
           rtaudio

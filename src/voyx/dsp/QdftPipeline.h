@@ -33,9 +33,9 @@ protected:
   {
     voyx::matrix<phasor_t> dfts(data.dfts, qdft.size());
 
-    qdft.qdft(input, dfts);
+    qdft.qdft(dfts.size(), input.data(), dfts.data());
     (*this)(index, dfts);
-    qdft.iqdft(dfts, output);
+    qdft.iqdft(dfts.size(), dfts.data(), output.data());
   }
 
   virtual void operator()(const size_t index, voyx::matrix<phasor_t> dfts) = 0;
