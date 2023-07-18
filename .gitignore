@@ -12,3 +12,5 @@ Thumbs.db
 
 mic*.wav
 speak*.wav
+
+out/
