@@ -5,7 +5,7 @@
 
 CPMAddPackage(
   NAME pocketfft
-  VERSION V1.0
+  VERSION 1.0
   GIT_REPOSITORY https://github.com/sdwarwick/pocketfft
   DOWNLOAD_ONLY YES)
 

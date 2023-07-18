@@ -63,6 +63,8 @@ if(rtmidi_ADDED)
     target_compile_definitions(rtmidi
       PUBLIC -D__WINDOWS_MM__)
 
+      target_link_libraries(rtmidi
+      PUBLIC WinMM)
 
   endif()
 
