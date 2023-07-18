@@ -18,8 +18,8 @@ if(rtmidi_ADDED)
   target_include_directories(rtmidi
     PUBLIC  "${rtmidi_SOURCE_DIR}")
 
-  target_compile_features(rtmidi
-    PRIVATE cxx_std_11)
+  #target_compile_features(rtmidi
+  #  PRIVATE cxx_std_11  )
 
   if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 
@@ -57,6 +57,15 @@ if(rtmidi_ADDED)
              "-framework CoreMIDI")
 
   endif()
+
+  if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+
+    target_compile_definitions(rtmidi
+      PUBLIC -D__WINDOWS_MM__)
+
+
+  endif()
+
 
   #####################
   # DISABLED WARNINGS #

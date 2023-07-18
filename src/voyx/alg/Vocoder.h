@@ -106,7 +106,8 @@ private:
    **/
   inline static T wrap(const T phase)
   {
-    const T PI = T(2) * T(M_PI);
+    const T PI = T(2) *  std::numbers::pi_v<T>;
+    /*  const T PI = T(2) * T(M_PI); */
 
     return phase - PI * std::floor(phase / PI + T(0.5));
   }
@@ -132,9 +133,9 @@ private:
    **/
   inline static T atan2(const T y, const T x)
   {
-    const T PI = T(M_PI);
-    const T PI2 = T(M_PI_2);
-    const T PI4 = T(M_PI_4);
+    const T PI = std::numbers::pi_v<T>;
+    const T PI2 = PI/2.0;
+    const T PI4 = PI/4.0;
 
     const T A = PI4 + T(0.273);
     const T B = T(0.273);

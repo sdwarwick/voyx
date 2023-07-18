@@ -18,8 +18,8 @@ if(rtaudio_ADDED)
   target_include_directories(rtaudio
     PUBLIC  "${rtaudio_SOURCE_DIR}")
 
-  target_compile_features(rtaudio
-    PRIVATE cxx_std_11)
+  #target_compile_features(rtaudio
+  #  PRIVATE cxx_std_11)
 
   if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 
@@ -57,6 +57,14 @@ if(rtaudio_ADDED)
              "-framework CoreAudio")
 
   endif()
+
+  if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+
+    target_compile_definitions(rtaudio
+      PUBLIC -D__WINDOWS_WASAPI__)
+
+  endif()
+
 
   #####################
   # DISABLED WARNINGS #
