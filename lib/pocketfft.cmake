@@ -1,9 +1,11 @@
-# https://gitlab.mpcdf.mpg.de/mtr/pocketfft
+# https://github.com/sdwarwick/pocketfft
+
+# GIT_TAG 8645d53873bf8258840feb00ad5bd8174b9daf97
+# VERSION 2023.7.16
 
 CPMAddPackage(
   NAME pocketfft
-  VERSION 2023.7.16
-  GIT_TAG 8645d53873bf8258840feb00ad5bd8174b9daf97
+  VERSION V1.0
   GIT_REPOSITORY https://github.com/sdwarwick/pocketfft
   DOWNLOAD_ONLY YES)
 
