@@ -4,7 +4,7 @@ project(voyx)
 
 if (MSVC)
   # add_compile_options(/W3 /WX /std:c++20)
-  add_compile_options(/W3 /std:c++20 -DNOMINMAX)
+  add_compile_options(/W3 /std:c++20 /Zc:__cplusplus -DNOMINMAX)
 else()
   # add_compile_options(-Wall -Werror)
 endif()
